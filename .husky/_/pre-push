@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+CURRENT_BRANCH=$(git branch --show-current)
+if [[ "$CURRENT_BRANCH" == "main" ]]; then
+  echo "🔒 Pushing to main branch detected!"
+  echo "🧪 Running full test suite..."
+  ./gradlew testAll
+
+  if [ $? -eq 0 ]; then
+    echo "✅ All tests passed! Push proceeding..."
+  else
+    echo "❌ Tests failed! Push blocked."
+    exit 1
+  fi
+else
+  echo "🌿 On branch: $CURRENT_BRANCH"
+  echo "⏭️  Skipping tests for non-main branch"
+fi
