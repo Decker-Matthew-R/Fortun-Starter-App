@@ -1,0 +1,63 @@
+logging:
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS, UTC
+server:
+  port: 8080
+  servlet:
+    session:
+      cookie:
+        secure: true
+        http-only: true
+      ## Default, by required by APSC-DV-002270
+      tracking-modes: COOKIE
+  shutdown: graceful
+spring:
+  application:
+    name: fortuna
+  output:
+    ansi:
+      enabled: always
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:fortuna_dev}
+    username: ${POSTGRES_USERNAME:dev}
+    password: ${POSTGRES_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+    connectionProperties:
+      sslFactory: org.postgresql.ssl.DefaultJavaSSLFactory
+  session:
+    timeout: 900 #STIG: APSC-DV-000070
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        jdbc:
+          batch_size: 30
+        order_updates: true
+        insert_updates: true
+  #    show-sql: true
+  #    properties:
+  #      hibernate:
+  #        format_sql: true
+  profiles:
+    group:
+      journey:
+      dev: dev
+
+application:
+  hostname: http://localhost:8080
+  logout:
+    path: /logout
+  authentication:
+    success-redirect-uri: /
+    failure-redirect-uri: /errorPage
+    post-logout-redirect-uri: "{baseUrl}"
+  feature-flags:
+    useJobDescriptionAndPersonaMetrics: false
+
+#fortuna:
+#  concurrency:
+#    timeout-in-seconds: 300
+#  migration:
+#    check-point-frequency: 5
+#    pause-frequency-in-seconds: 300
+#    pause-duration-in-seconds: 1

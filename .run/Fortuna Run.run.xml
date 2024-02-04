@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Fortuna Run" type="Multirun" separateTabs="false" reuseTabsWithFailures="false" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="false" delayTime="0.0">
+    <runConfiguration name="Root Docker Compose" type="Docker" />
+    <runConfiguration name="Fortuna Frontend" type="npm" />
+    <runConfiguration name="Fortuna Backend" type="Spring Boot" />
+    <method v="2" />
+  </configuration>
+</component>

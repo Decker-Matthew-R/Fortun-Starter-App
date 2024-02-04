@@ -1,0 +1,255 @@
+tasks.register('jacocoCoverageSummary') {
+    dependsOn jacocoTestReport
+    doLast {
+        def reportFile = file("${project.buildDir}/reports/jacoco/test/jacocoTestReport.xml")
+        if (!reportFile.exists()) {
+            println "❌ JaCoCo XML report not found"
+            return
+        }
+
+        try {
+            def xmlContent = reportFile.text
+
+            def allInstructionMatches = []
+            def allBranchMatches = []
+
+            def instructionPattern = /<counter type="INSTRUCTION" missed="(\d+)" covered="(\d+)"\/>/
+            def branchPattern = /<counter type="BRANCH" missed="(\d+)" covered="(\d+)"\/>/
+
+            xmlContent.eachMatch(instructionPattern) { match ->
+                allInstructionMatches << [missed: match[1] as int, covered: match[2] as int]
+            }
+            xmlContent.eachMatch(branchPattern) { match ->
+                allBranchMatches << [missed: match[1] as int, covered: match[2] as int]
+            }
+
+            if (allInstructionMatches.size() == 0) {
+                println "❌ Could not parse coverage data"
+                return
+            }
+
+            def overallInstruction = allInstructionMatches.last()
+            def overallBranch = allBranchMatches.size() > 0 ? allBranchMatches.last() : [missed: 0, covered: 0]
+
+            def overallTotal = overallInstruction.covered + overallInstruction.missed
+            def overallPercent = overallTotal > 0 ? (overallInstruction.covered / overallTotal * 100) as double : 0.0
+
+            def branchTotal = overallBranch.covered + overallBranch.missed
+            def branchPercent = branchTotal > 0 ? (overallBranch.covered / branchTotal * 100) as double : 100.0
+
+            println ""
+            println "🧪 ═══════════════════════════════════════════════════════════════"
+            println "📊 JACOCO COVERAGE SUMMARY"
+            println "🧪 ═══════════════════════════════════════════════════════════════"
+            println "📈 Overall Coverage:"
+            println "   Instructions: ${String.format('%.2f%%', overallPercent)} (${overallInstruction.covered}/${overallTotal})"
+            println "   Branches:     ${String.format('%.2f%%', branchPercent)} (${overallBranch.covered}/${branchTotal})"
+            println ""
+
+            def instructionMeetsMin = overallPercent >= 90.0
+            def branchMeetsMin = branchPercent >= 90.0
+            def passIcon = instructionMeetsMin && branchMeetsMin ? "✅" : "❌"
+            println "${passIcon} Minimum Coverage (90%): ${instructionMeetsMin && branchMeetsMin ? 'PASSED' : 'FAILED'}"
+            if (!instructionMeetsMin) println "   ⚠️  Instructions below 90%: ${String.format('%.2f%%', overallPercent)}"
+            if (!branchMeetsMin) println "   ⚠️  Branches below 90%: ${String.format('%.2f%%', branchPercent)}"
+            println ""
+
+            def allClasses = []
+            def classPattern = /<class name="([^"]+)"[^>]*>(.*?)<\/class>/
+            def classMatcher = xmlContent =~ classPattern
+
+            classMatcher.each { match ->
+                def className = match[1].replace('/', '.')
+                def classContent = match[2]
+
+                def classInstructionMatches = []
+                def classBranchMatches = []
+
+                classContent.eachMatch(instructionPattern) { instructionMatch ->
+                    classInstructionMatches << [missed: instructionMatch[1] as int, covered: instructionMatch[2] as int]
+                }
+                classContent.eachMatch(branchPattern) { branchMatch ->
+                    classBranchMatches << [missed: branchMatch[1] as int, covered: branchMatch[2] as int]
+                }
+
+                if (classInstructionMatches.size() > 0) {
+                    def classInstruction = classInstructionMatches.last()
+                    def classBranch = classBranchMatches.size() > 0 ? classBranchMatches.last() : [missed: 0, covered: 0]
+
+                    def instructionTotal = classInstruction.covered + classInstruction.missed
+                    def instructionPercent = instructionTotal > 0 ? (classInstruction.covered / instructionTotal * 100) as double : 100.0
+
+                    def classBranchTotal = classBranch.covered + classBranch.missed
+                    def classBranchPercent = classBranchTotal > 0 ? (classBranch.covered / classBranchTotal * 100) as double : 100.0
+
+                    def uncoveredLines = []
+                    def lineMatcher = classContent =~ /<line nr="(\d+)" mi="(\d+)" ci="(\d+)"[^>]*\/>/
+                    lineMatcher.each { lineMatch ->
+                        def lineNr = lineMatch[1] as int
+                        def missedInstr = lineMatch[2] as int
+                        def coveredInstr = lineMatch[3] as int
+
+                        if (coveredInstr == 0 && missedInstr > 0) {
+                            uncoveredLines << lineNr
+                        }
+                    }
+
+                    if (instructionTotal > 0) {
+                        allClasses << [
+                            name              : className,
+                            instructionPercent: instructionPercent,
+                            branchPercent     : classBranchPercent,
+                            instructionTotal  : instructionTotal,
+                            instructionMissed : classInstruction.missed,
+                            instructionCovered: classInstruction.covered,
+                            branchTotal       : classBranchTotal,
+                            branchMissed      : classBranch.missed,
+                            branchCovered     : classBranch.covered,
+                            uncoveredLines    : uncoveredLines.sort()
+                        ]
+                    }
+                }
+            }
+
+            allClasses.sort { it.instructionPercent }
+
+            println "📁 Per-Class Coverage:"
+            println "   ┌─────────────────────────────────────────────────────────────┬──────────┬──────────┐"
+            println "   │ Class                                                       │ Instruct │ Branches │"
+            println "   ├─────────────────────────────────────────────────────────────┼──────────┼──────────┤"
+
+            allClasses.each { cls ->
+                def shortName = cls.name.length() > 55 ? "..." + cls.name.substring(cls.name.length() - 52) : cls.name
+                def instructionStatus = cls.instructionPercent < 90 ? "❌" : "✅"
+                def branchStatus = cls.branchPercent < 90 ? "❌" : "✅"
+
+                printf "   │ %-55s │ %s %6.2f%% │ %s %6.2f%% │%n",
+                    shortName,
+                    instructionStatus, cls.instructionPercent as double,
+                    branchStatus, cls.branchPercent as double
+            }
+
+            println "   └─────────────────────────────────────────────────────────────┴──────────┴──────────┘"
+            println ""
+
+            def lowCoverageClasses = allClasses.findAll {
+                it.instructionPercent < 90 || it.branchPercent < 90
+            }
+
+            if (lowCoverageClasses.size() > 0) {
+                println "🔍 DETAILED BREAKDOWN - Classes needing attention:"
+                println ""
+
+                lowCoverageClasses.each { cls ->
+                    println "📁 ${cls.name}"
+                    println "   📊 Coverage: ${String.format('%.2f%%', cls.instructionPercent)} instructions (${cls.instructionCovered}/${cls.instructionTotal}), ${String.format('%.2f%%', cls.branchPercent)} branches (${cls.branchCovered}/${cls.branchTotal})"
+
+                    if (cls.uncoveredLines.size() > 0) {
+                        def lineGroups = []
+                        def currentGroup = [cls.uncoveredLines[0]]
+
+                        for (int i = 1; i < cls.uncoveredLines.size(); i++) {
+                            def current = cls.uncoveredLines[i]
+                            def previous = cls.uncoveredLines[i - 1]
+
+                            if (current == previous + 1) {
+                                currentGroup << current
+                            } else {
+                                lineGroups << currentGroup
+                                currentGroup = [current]
+                            }
+                        }
+                        if (cls.uncoveredLines.size() > 0) {
+                            lineGroups << currentGroup
+                        }
+
+                        def formattedGroups = lineGroups.collect { group ->
+                            if (group.size() == 1) {
+                                return group[0].toString()
+                            } else if (group.size() == 2) {
+                                return "${group[0]}, ${group[1]}"
+                            } else {
+                                return "${group[0]}-${group[-1]}"
+                            }
+                        }
+
+                        println "   🔴 Uncovered lines: ${formattedGroups.join(', ')}"
+                    } else {
+                        println "   ✅ All lines covered (branch coverage may be low)"
+                    }
+
+                    println ""
+                }
+            } else {
+                println "🎉 All classes meet coverage requirements!"
+                println ""
+            }
+
+            println "📄 Full HTML Report: file://${project.buildDir}/reports/jacoco/test/html/index.html"
+            println "🧪 ═══════════════════════════════════════════════════════════════"
+            println ""
+
+        } catch (Exception e) {
+            println "❌ Error parsing coverage report: ${e.message}"
+            e.printStackTrace()
+        }
+    }
+}
+
+jacocoTestReport {
+    dependsOn test
+    finalizedBy jacocoCoverageSummary
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                '**/Application.class',
+                '**/*Config.class',
+                '**/*Configuration.class',
+                '**/dto/**',
+                '**/entity/**',
+                '**/**/model/**',
+                '**/TestAuthController.class'
+            ])
+        }))
+    }
+}
+
+jacocoTestCoverageVerification {
+    dependsOn jacocoTestReport
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.90
+            }
+        }
+        rule {
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.90
+            }
+        }
+    }
+
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                '**/Application.class',
+                '**/*Config.class',
+                '**/*Configuration.class',
+                '**/dto/**',
+                '**/entity/**',
+                '**/**/model/**',
+                '**/TestAuthController.class'
+            ])
+        }))
+    }
+}

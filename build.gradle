@@ -1,0 +1,289 @@
+import org.flywaydb.gradle.task.FlywayCleanTask
+import org.flywaydb.gradle.task.FlywayMigrateTask
+
+buildscript {
+    dependencies {
+        classpath "org.flywaydb:flyway-database-postgresql:12.0.0"
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '4.0.2'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'jacoco'
+    id 'distribution'
+    id 'application'
+    id 'com.diffplug.spotless' version '8.2.1'
+    id "org.flywaydb.flyway" version "12.0.0"
+    id 'org.owasp.dependencycheck' version '12.2.0'
+}
+
+dependencyCheck {
+    formats = ['HTML', 'JSON']
+    outputDirectory = 'build/reports'
+    nvd.apiKey = System.getenv('NVD_API_KEY')
+
+    scanSet = [
+        'frontend/package.json',
+        'frontend/yarn.lock',
+        'journey/package.json',
+        'journey/yarn.lock'
+    ]
+}
+
+dependencyLocking {
+    lockAllConfigurations()
+    lockMode = LockMode.LENIENT
+    ignoredDependencies = []
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+
+    configureEach {
+        resolutionStrategy.activateDependencyLocking()
+    }
+}
+
+distributions {
+    main {
+        distributionBaseName.set(rootProject.name)
+    }
+}
+
+repositories {
+    mavenCentral()
+
+}
+
+group = 'com'
+version = '0.0.1-SNAPSHOT'
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/fortuna_dev'
+    user = 'dev'
+    password = 'password'
+    cleanDisabled = false
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+jacoco {
+    toolVersion = "0.8.13"
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.session:spring-session-jdbc'
+
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
+
+
+    implementation 'org.yaml:snakeyaml:2.2'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+
+    runtimeOnly 'org.postgresql:postgresql'
+
+    compileOnly 'org.projectlombok:lombok'
+
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework:spring-test'
+}
+
+application {
+    mainClass.set('com.fortuna.FortunaApplication')
+}
+
+bootJar.enabled = false
+bootDistZip.enabled = false
+bootDistTar.enabled = false
+
+sourceSets {
+    main {
+        java {
+            String activeProfile = System.getenv('SPRING_PROFILES_ACTIVE')
+            if (activeProfile == null || !activeProfile.toLowerCase().equalsIgnoreCase("dev")) {
+                exclude '**/dev_only'
+            }
+
+        }
+    }
+}
+
+allprojects {
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile).tap {
+            configureEach {
+                options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+            }
+        }
+    }
+}
+
+spotless {
+    java {
+        target 'src/**/*.java'
+
+        googleJavaFormat('1.17.0').aosp()
+
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
+
+tasks.named('resolveMainClassName') {
+    dependsOn tasks.named('copyFrontend')
+}
+
+tasks.named('jar') {
+    dependsOn('copyFrontend')
+}
+
+tasks.named('compileTestJava') {
+    dependsOn('copyFrontend')
+}
+
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestReport
+    minHeapSize = "1024m"
+    maxHeapSize = "2048m"
+    dependsOn("flywayTestDbClean", "flywayTestDbMigrate")
+}
+
+tasks.register('installFrontend', Exec) {
+    inputs.file(file("frontend/yarn.lock"))
+    inputs.file(file("frontend/package.json"))
+    commandLine("yarn", "--cwd", "frontend", "install")
+}
+
+tasks.register('installJourney', Exec) {
+    inputs.file(file("journey/yarn.lock"))
+    inputs.file(file("journey/package.json"))
+    outputs.dir(file("journey/node_modules"))
+    commandLine("yarn", "--cwd", "journey", "install")
+}
+
+tasks.register('buildFrontend', Exec) {
+    dependsOn("installFrontend")
+    inputs.dir(file("frontend"))
+    outputs.dir(file("frontend/build"))
+    commandLine("yarn", "--cwd", "frontend", "build")
+}
+
+tasks.register('copyFrontend', Sync) {
+    dependsOn("buildFrontend")
+    from(file("./frontend/build"))
+    into(file("${layout.buildDirectory.get()}/resources/main/static"))
+    doLast {
+        println("copied built frontend to static resources")
+    }
+}
+
+tasks.register('copyFrontendForIntelliJ', Sync) {
+    dependsOn("buildFrontend")
+    from(file("./frontend/build"))
+    into(file("./src/main/resources/static"))
+    doLast {
+        println("copied built frontend to static resources")
+    }
+}
+
+tasks.register('cleanFrontend', Delete) {
+    delete(file("./frontend/build"))
+    delete(file("./src/main/resources/static"))
+}
+
+tasks.register('flywayTestDbClean', FlywayCleanTask) {
+    url = 'jdbc:postgresql://localhost:5433/fortuna_test'
+    user = 'fortuna_test'
+    password = 'password'
+    cleanDisabled = false
+}
+
+tasks.register('flywayTestDbMigrate', FlywayMigrateTask) {
+    url = 'jdbc:postgresql://localhost:5433/fortuna_test'
+    user = 'fortuna_test'
+    password = 'password'
+    cleanDisabled = false
+}
+
+tasks.register('flywayJourneyTestDbClean', FlywayCleanTask) {
+    url = 'jdbc:postgresql://localhost:5434/fortuna_journey'
+    user = 'fortuna_journey'
+    password = 'password'
+    cleanDisabled = false
+}
+
+tasks.register('flywayJourneyTestDbMigrate', FlywayMigrateTask) {
+    url = 'jdbc:postgresql://localhost:5434/fortuna_journey'
+    user = 'fortuna_journey'
+    password = 'password'
+    cleanDisabled = false
+}
+
+tasks.register('testFrontend', Exec) {
+    dependsOn("installFrontend")
+    commandLine("yarn", "--cwd", "frontend", "test")
+}
+
+tasks.register('testJourney', Exec) {
+    dependsOn("installJourney", 'flywayJourneyTestDbClean', 'flywayJourneyTestDbMigrate')
+    commandLine("yarn", "--cwd", "journey", "test")
+    environment("SPRING_PROFILES_ACTIVE", "journey")
+}
+
+
+tasks.register("testUnits") {
+    dependsOn("test", "testFrontend")
+}
+
+tasks.register('testAll') {
+    dependsOn("flywayTestDbClean", "test", "testFrontend", "testJourney")
+}
+
+tasks.register('showRepositories') {
+    repositories.each {
+        println "repository: ${it.name} ('${it.url}')"
+    }
+}
+
+bootJar {
+    dependsOn(copyFrontend)
+}
+
+bootRun {
+    dependsOn(copyFrontend)
+}
+
+clean {
+    dependsOn(cleanFrontend)
+}
+
+apply from: 'gradle/format-project.gradle'
+apply from: 'gradle/cve-report.gradle'
+apply from: 'gradle/jacoco-summary.gradle'
