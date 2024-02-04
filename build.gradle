@@ -1,0 +1,178 @@
+import org.flywaydb.gradle.task.FlywayCleanTask
+
+
+plugins {
+	id 'org.springframework.boot' version '3.2.2'
+	id 'io.spring.dependency-management' version '1.1.4'
+	id 'java'
+	id 'jacoco'
+	id 'distribution'
+	id 'application'
+	id "org.flywaydb.flyway" version "9.22.0"
+}
+
+distributions {
+    main {
+        distributionBaseName.set(rootProject.name)
+    }
+}
+
+repositories {
+	mavenCentral()
+
+}
+
+group = 'com'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+flyway {
+	url = 'jdbc:postgresql://localhost:5432/fortuna_dev'
+	user = 'dev'
+	password = 'password'
+	cleanDisabled = false
+}
+task flywayTestDbClean (type: FlywayCleanTask) {
+	url = 'jdbc:postgresql://localhost:5432/fortuna_dev'
+	user = 'dev'
+	password = 'password'
+	cleanDisabled = false
+}
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.springframework.session:spring-session-jdbc'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.yaml:snakeyaml:2.2'
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+}
+
+application {
+    mainClass.set('com.fortuna.FortunaApplication')
+}
+
+bootJar.enabled = false
+bootDistZip.enabled = false
+bootDistTar.enabled = false
+
+allprojects {
+	gradle.projectsEvaluated {
+		tasks.withType(JavaCompile) {
+			options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+		}
+	}
+}
+
+test {
+	useJUnitPlatform()
+	minHeapSize = "1024m"
+	maxHeapSize = "2048m"
+}
+
+task installFrontend(type: Exec) {
+	inputs.file(file("frontend/yarn.lock"))
+	inputs.file(file("frontend/package.json"))
+	commandLine("yarn", "--cwd", "frontend", "install")
+}
+
+task installJourney(type: Exec) {
+	inputs.file(file("journey/yarn.lock"))
+	inputs.file(file("journey/package.json"))
+	outputs.dir(file("journey/node_modules"))
+	commandLine("yarn", "--cwd", "journey", "install")
+}
+
+task buildFrontend(type: Exec) {
+	dependsOn("installFrontend")
+	inputs.dir(file("frontend"))
+	outputs.dir(file("frontend/build"))
+	commandLine("yarn", "--cwd", "frontend", "build")
+}
+
+task copyFrontend(type: Sync) {
+	dependsOn("buildFrontend")
+	from(file("./frontend/build"))
+	into(file("$buildDir/resources/main/static"))
+	doLast {
+		println("copied built frontend to static resources")
+	}
+}
+
+task copyFrontendForIntelliJ(type: Sync) {
+	dependsOn("buildFrontend")
+	from(file("./frontend/build"))
+	into(file("./src/main/resources/static"))
+	doLast {
+		println("copied built frontend to static resources")
+	}
+}
+
+task cleanFrontend(type: Delete) {
+	delete(file("./frontend/build"))
+	delete(file("./src/main/resources/static"))
+}
+
+task testFrontend(type: Exec) {
+	dependsOn("installFrontend")
+	commandLine("yarn", "--cwd", "frontend", "test")
+}
+
+task testJourney(type: Exec) {
+	dependsOn("installJourney")
+	commandLine("yarn", "--cwd", "journey", "test")
+}
+
+task installPerformance(type: Exec) {
+	inputs.file(file("performance/yarn.lock"))
+	inputs.file(file("performance/package.json"))
+	outputs.dir(file("performance/node_modules"))
+	commandLine("yarn", "--cwd", "performance", "install")
+}
+
+task testPerformance(type: Exec) {
+	dependsOn("installPerformance")
+	commandLine("yarn", "--cwd", "performance", "test")
+}
+
+task testAll() {
+	dependsOn("flywayTestDbClean", "test", "testFrontend", "testJourney")
+}
+
+task showRepositories {
+	repositories.each {
+		println "repository: ${it.name} ('${it.url}')"
+	}
+}
+
+bootJar {
+	dependsOn(copyFrontend)
+}
+
+bootRun {
+	dependsOn(copyFrontend)
+}
+
+clean {
+	dependsOn(cleanFrontend)
+}
