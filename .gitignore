@@ -37,3 +37,8 @@ out/
 .vscode/
 
 postgres-data
+
+### Journey test output ###
+/journey/cypress/screenshots
+/journey/cypress/videos
+/journey/cypress/downloads
