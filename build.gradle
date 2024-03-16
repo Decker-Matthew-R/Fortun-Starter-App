@@ -76,6 +76,18 @@ bootJar.enabled = false
 bootDistZip.enabled = false
 bootDistTar.enabled = false
 
+sourceSets {
+	main {
+		java {
+			String activeProfile = System.getenv('SPRING_PROFILES_ACTIVE')
+			if(activeProfile == null || !activeProfile.toLowerCase().equalsIgnoreCase("dev")) {
+				exclude '**/dev_only'
+			}
+
+		}
+	}
+}
+
 allprojects {
 	gradle.projectsEvaluated {
 		tasks.withType(JavaCompile) {

@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5434}/${POSTGRES_DB:fortuna_journey}
+    username: ${POSTGRES_USERNAME:fortuna_journey}
+    password: ${POSTGRES_PASSWORD:password}
