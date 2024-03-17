@@ -1104,7 +1104,7 @@
   resolved "https://registry.yarnpkg.com/@babel/regjsgen/-/regjsgen-0.8.0.tgz#f0ba69b075e1f05fb2825b7fad991e7adbb18310"
   integrity sha512-x/rqGMdzj+fWZvCOYForTghzbtqPDZ5gPwaoNGHdgDfF2QA/XZbCBp4Moo5scrkAMPhB7z26XM/AaHuIJdgauA==
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.12.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.18.3", "@babel/runtime@^7.18.9", "@babel/runtime@^7.21.0", "@babel/runtime@^7.23.2", "@babel/runtime@^7.23.9", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.12.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.18.3", "@babel/runtime@^7.18.9", "@babel/runtime@^7.21.0", "@babel/runtime@^7.22.6", "@babel/runtime@^7.23.2", "@babel/runtime@^7.23.9", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
   version "7.24.0"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.24.0.tgz#584c450063ffda59697021430cb47101b085951e"
   integrity sha512-Chk32uHMg6TnQdvw2e9IlqPpFX/6NLuK0Ys2PqLb7/gL5uFn9mXvK715FGLlOLQrcO4qIkNHkvPGktzzXexsFw==
@@ -1757,14 +1757,14 @@
   resolved "https://registry.yarnpkg.com/@mui/core-downloads-tracker/-/core-downloads-tracker-5.15.13.tgz#f753bec8994b5defe4f62832a8a9ed14b5cb2d16"
   integrity sha512-ERsk9EWpiitSiKnmUdFJGshtFk647l4p7r+mjRWe/F1l5kT1NTTKkaeDLcK3/lsy0udXjMgcG0bNwzbYBdDdhQ==
 
-"@mui/icons-material@^5.10.14":
+"@mui/icons-material@^":
   version "5.15.13"
   resolved "https://registry.yarnpkg.com/@mui/icons-material/-/icons-material-5.15.13.tgz#8eabb372e64cb4dd5ef4f02df670543fa34bf360"
   integrity sha512-I7CioMQKBPaKyGgcE9i8+1dgzAmox5a/0wZ0E9sIxm7PzG5KJZRRJkdK4oDT4HfYRGv61KjcHEeqH48pht1dvQ==
   dependencies:
     "@babel/runtime" "^7.23.9"
 
-"@mui/material@^5.10.8":
+"@mui/material@^5.15.13":
   version "5.15.13"
   resolved "https://registry.yarnpkg.com/@mui/material/-/material-5.15.13.tgz#ba4414d90075321d631a6ecfaad69b34b995cea0"
   integrity sha512-E+QisOJcIzTTyeJ0o3lgYMcyrmCydb2S4cn9vTtGpIB9uR6fQ6La3dIGsXgYEGyeOB9YkWzQbNzYzvyODGEWKA==
@@ -1820,7 +1820,7 @@
   resolved "https://registry.yarnpkg.com/@mui/types/-/types-7.2.13.tgz#d1584912942f9dc042441ecc2d1452be39c666b8"
   integrity sha512-qP9OgacN62s+l8rdDhSFRe05HWtLLJ5TGclC9I1+tQngbssu0m2dmFZs+Px53AcOs9fD7TbYd4gc9AXzVqO/+g==
 
-"@mui/utils@^5.10.3", "@mui/utils@^5.15.13":
+"@mui/utils@^5.10.3", "@mui/utils@^5.13.7", "@mui/utils@^5.14.16", "@mui/utils@^5.15.13":
   version "5.15.13"
   resolved "https://registry.yarnpkg.com/@mui/utils/-/utils-5.15.13.tgz#4adfed6c585a6787f1f0d7d1fadb9ff0f7ddb2bd"
   integrity sha512-qNlR9FLEhORC4zVZ3fzF48213EhP/92N71AcFbhHN73lPJjAbq9lUv+71P7uEdRHdrrOlm8+1zE8/OBy6MUqdg==
@@ -1830,30 +1830,30 @@
     prop-types "^15.8.1"
     react-is "^18.2.0"
 
-"@mui/x-data-grid-pro@^5.17.12":
-  version "5.17.26"
-  resolved "https://registry.yarnpkg.com/@mui/x-data-grid-pro/-/x-data-grid-pro-5.17.26.tgz#ef2574e460b7f015bb9a23d45b6335b718997d6c"
-  integrity sha512-WvJmnY7rUO4m2DYYNOj0DI63Yacb+D62IBH2bfxY5iZToJM1axkqfVE/nq5nrd80nXUr3XqaBYCO6j1E6QshRw==
+"@mui/x-data-grid-pro@^6.19.6":
+  version "6.19.6"
+  resolved "https://registry.yarnpkg.com/@mui/x-data-grid-pro/-/x-data-grid-pro-6.19.6.tgz#e7bccfa43928377b485b2ced7795ab6230e82bdf"
+  integrity sha512-Bh2qvRHoHxgrUHKMeu46VRzl2lOSvxjtPAhJncRUJuYE6hVu2VZxvqrdmdxdIWkom2ygpFwq6YP6xMJsDFX+QQ==
   dependencies:
-    "@babel/runtime" "^7.18.9"
-    "@mui/utils" "^5.10.3"
-    "@mui/x-data-grid" "5.17.26"
-    "@mui/x-license-pro" "5.17.12"
-    "@types/format-util" "^1.0.2"
-    clsx "^1.2.1"
+    "@babel/runtime" "^7.23.2"
+    "@mui/utils" "^5.14.16"
+    "@mui/x-data-grid" "6.19.6"
+    "@mui/x-license-pro" "6.10.2"
+    "@types/format-util" "^1.0.3"
+    clsx "^2.0.0"
     prop-types "^15.8.1"
-    reselect "^4.1.6"
+    reselect "^4.1.8"
 
-"@mui/x-data-grid@5.17.26":
-  version "5.17.26"
-  resolved "https://registry.yarnpkg.com/@mui/x-data-grid/-/x-data-grid-5.17.26.tgz#1f7fa73dd3986cf052e2fd2cb56eb4678a7bd913"
-  integrity sha512-eGJq9J0g9cDGLFfMmugOadZx0mJeOd/yQpHwEa5gUXyONS6qF0OhXSWyDOhDdA3l2TOoQzotMN5dY/T4Wl1KYA==
+"@mui/x-data-grid@6.19.6":
+  version "6.19.6"
+  resolved "https://registry.yarnpkg.com/@mui/x-data-grid/-/x-data-grid-6.19.6.tgz#6334bb70a7a2685fc1cf3ed902172661c3206f3f"
+  integrity sha512-jpZkX1Gnlo87gKcD10mKMY8YoAzUD8Cv3/IvedH3FINDKO3hnraMeOciKDeUk0tYSj8RUDB02kpTHCM8ojLVBA==
   dependencies:
-    "@babel/runtime" "^7.18.9"
-    "@mui/utils" "^5.10.3"
-    clsx "^1.2.1"
+    "@babel/runtime" "^7.23.2"
+    "@mui/utils" "^5.14.16"
+    clsx "^2.0.0"
     prop-types "^15.8.1"
-    reselect "^4.1.6"
+    reselect "^4.1.8"
 
 "@mui/x-date-pickers-pro@^5.0.9":
   version "5.0.20"
@@ -1898,6 +1898,14 @@
   dependencies:
     "@babel/runtime" "^7.18.9"
     "@mui/utils" "^5.10.3"
+
+"@mui/x-license-pro@6.10.2":
+  version "6.10.2"
+  resolved "https://registry.yarnpkg.com/@mui/x-license-pro/-/x-license-pro-6.10.2.tgz#68b069214efb085f7f8c34b73d450743857e0aea"
+  integrity sha512-Baw3shilU+eHgU+QYKNPFUKvfS5rSyNJ98pQx02E0gKA22hWp/XAt88K1qUfUMPlkPpvg/uci6gviQSSLZkuKw==
+  dependencies:
+    "@babel/runtime" "^7.22.6"
+    "@mui/utils" "^5.13.7"
 
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
   version "5.1.1-v1"
@@ -2227,7 +2235,7 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.5.tgz#a6ce3e556e00fd9895dd872dd172ad0d4bd687f4"
   integrity sha512-/kYRxGDLWzHOB7q+wtSUQlFrtcdUccpfy+X+9iMBpHK8QLLhx2wIPYuS5DYtR9Wa/YlZAbIovy7qVdB1Aq6Lyw==
 
-"@types/format-util@^1.0.2":
+"@types/format-util@^1.0.3":
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/@types/format-util/-/format-util-1.0.4.tgz#c4e3b556735149fdf047898a5b9c04650491509b"
   integrity sha512-xrCYOdHh5zA3LUrn6CvspYwlzSWxPso11Lx32WnAG6KvLCRecKZ/Rh21PLXUkzUFsQmrGcx/traJAFjR6dVS5Q==
@@ -3311,7 +3319,7 @@ clsx@^1.2.1:
   resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.2.1.tgz#0ddc4a20a549b59c93a4116bb26f5294ca17dc12"
   integrity sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==
 
-clsx@^2.1.0:
+clsx@^2.0.0, clsx@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/clsx/-/clsx-2.1.0.tgz#e851283bcb5c80ee7608db18487433f7b23f77cb"
   integrity sha512-m3iNNWpd9rl3jvvcBnu70ylMdrXt8Vlq4HYadnU5fwcOtvkSQWPmj7amUcDT2qYI7risszBjI5AUIUox9D16pg==
@@ -6264,7 +6272,7 @@ requires-port@^1.0.0:
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==
 
-reselect@^4.1.6:
+reselect@^4.1.8:
   version "4.1.8"
   resolved "https://registry.yarnpkg.com/reselect/-/reselect-4.1.8.tgz#3f5dc671ea168dccdeb3e141236f69f02eaec524"
   integrity sha512-ab9EmR80F/zQTMNeneUr4cv+jSwPJgIlvEmVwLerwrWVbpLlBuls9XHzIeTFy4cegU2NHBp3va0LKOzU5qFEYQ==
