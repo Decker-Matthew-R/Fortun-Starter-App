@@ -34,3 +34,4 @@ if [ -z "$husky_skip_init" ]; then
 
   exit $exitCode
 fi
+
