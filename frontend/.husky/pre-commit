@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 
 printf "Formatting Repo Files"
-cd frontend && yarn format
+yarn format
