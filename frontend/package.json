@@ -9,6 +9,11 @@
     "test": "vitest run --coverage",
     "prepare": "cd .. && husky install frontend/.husky"
   },
+  "husky": {
+    "hooks": {
+      "pre-commit": "prettier --write . && git add -A"
+    }
+  },
   "dependencies": {
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
