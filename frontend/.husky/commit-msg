@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+CURRENT_BRANCH=$(git branch --show-current)
+if [[ "$CURRENT_BRANCH" == "main" ]]; then
+  . "$(dirname "$0")/_/husky.sh"
+  cd frontend && npx commitlint --edit "$1"
+else
+  printf "Skipping commit lint for branch: %s\n" "$CURRENT_BRANCH"
+fi

@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+CURRENT_BRANCH=$(git branch --show-current)
+if [[ "$CURRENT_BRANCH" == "main" ]]; then
+  . "$(dirname "$0")/_/husky.sh"
+  printf "Running testAll \n"
+  ./gradlew testAll
+else
+  printf "Skipping testAll for branch: %s\n" "$CURRENT_BRANCH"
+fi
