@@ -1,5 +1,4 @@
- #!/usr/bin/env sh
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
 
- . "$(dirname "$0")/_/husky.sh"
-  printf "Updating File Formatting \n"
-  prepare
+yarn format
