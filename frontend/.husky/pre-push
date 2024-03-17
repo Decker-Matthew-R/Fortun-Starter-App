@@ -8,4 +8,3 @@ if [[ "$CURRENT_BRANCH" == "main" ]]; then
 else
   printf "Skipping testAll for branch: %s\n" "$CURRENT_BRANCH"
 fi
-
