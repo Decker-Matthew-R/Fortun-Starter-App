@@ -5,6 +5,7 @@ if [[ "$CURRENT_BRANCH" == "main" ]]; then
   . "$(dirname "$0")/_/husky.sh"
   printf "Running testAll \n"
   cd ..
+  cd ..
   ./gradlew testAll
 else
   printf "Skipping testAll for branch: %s\n" "$CURRENT_BRANCH"
