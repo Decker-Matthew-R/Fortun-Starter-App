@@ -12,7 +12,8 @@ function App() {
       <div>
         <a
           href='https://vitejs.dev'
-          target='_blank'>
+          target='_blank'
+        >
           <img
             src={viteLogo}
             className='logo'
@@ -21,7 +22,8 @@ function App() {
         </a>
         <a
           href='https://react.dev'
-          target='_blank'>
+          target='_blank'
+        >
           <img
             src={reactLogo}
             className='logo react'
@@ -33,12 +35,14 @@ function App() {
       <div className='card'>
         <Button
           variant={'contained'}
-          onClick={() => setCount((count) => count + 1)}>
+          onClick={() => setCount((count) => count + 1)}
+        >
           count is {count}
         </Button>
         <Button
           color={'secondary'}
-          variant={'contained'}>
+          variant={'contained'}
+        >
           This Button Does Nothing
         </Button>
         <p>
@@ -47,7 +51,8 @@ function App() {
       </div>
       <Typography
         variant={'body1'}
-        className='read-the-docs'>
+        className='read-the-docs'
+      >
         Click on the Vite and React logos to learn more
       </Typography>
     </>

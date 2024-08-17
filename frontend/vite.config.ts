@@ -8,7 +8,7 @@ import svgrPlugin from 'vite-plugin-svgr';
 export default {
   plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
   build: {
-    outDir: 'build'
+    outDir: 'build',
   },
   test: {
     globals: true,
@@ -18,9 +18,9 @@ export default {
     coverage: {
       reporters: ['default', 'lcov'],
       include: ['src/**/*'],
-      exclude: []
+      exclude: [],
     },
-    ...(process.env.CI && { minThreads: 1, maxThreads: 1 })
+    ...(process.env.CI && { minThreads: 1, maxThreads: 1 }),
   },
   server: {
     port: 3000,
@@ -29,8 +29,8 @@ export default {
       '/api': {
         target: 'http://localhost:8080',
         changeOrigin: true,
-        secure: false
-      }
-    }
-  }
+        secure: false,
+      },
+    },
+  },
 };

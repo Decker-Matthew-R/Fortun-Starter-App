@@ -12,5 +12,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <CssBaseline enableColorScheme />
       <App />
     </ThemeProvider>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
