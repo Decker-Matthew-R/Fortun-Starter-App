@@ -16,7 +16,7 @@ export default {
     testTimeout: 30000,
     setupFiles: ['./src/setupTests.ts'],
     coverage: {
-      reporter: ['lcov'],
+      reporters: ['default', 'lcov'],
       include: ['src/**/*'],
       exclude: []
     },
