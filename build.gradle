@@ -102,27 +102,27 @@ test {
 	maxHeapSize = "2048m"
 }
 
-task installFrontend(type: Exec) {
+tasks.register('installFrontend', Exec) {
 	inputs.file(file("frontend/yarn.lock"))
 	inputs.file(file("frontend/package.json"))
 	commandLine("yarn", "--cwd", "frontend", "install")
 }
 
-task installJourney(type: Exec) {
+tasks.register('installJourney', Exec) {
 	inputs.file(file("journey/yarn.lock"))
 	inputs.file(file("journey/package.json"))
 	outputs.dir(file("journey/node_modules"))
 	commandLine("yarn", "--cwd", "journey", "install")
 }
 
-task buildFrontend(type: Exec) {
+tasks.register('buildFrontend', Exec) {
 	dependsOn("installFrontend")
 	inputs.dir(file("frontend"))
 	outputs.dir(file("frontend/build"))
 	commandLine("yarn", "--cwd", "frontend", "build")
 }
 
-task copyFrontend(type: Sync) {
+tasks.register('copyFrontend', Sync) {
 	dependsOn("buildFrontend")
 	from(file("./frontend/build"))
 	into(file("$buildDir/resources/main/static"))
@@ -131,7 +131,7 @@ task copyFrontend(type: Sync) {
 	}
 }
 
-task copyFrontendForIntelliJ(type: Sync) {
+tasks.register('copyFrontendForIntelliJ', Sync) {
 	dependsOn("buildFrontend")
 	from(file("./frontend/build"))
 	into(file("./src/main/resources/static"))
@@ -140,38 +140,42 @@ task copyFrontendForIntelliJ(type: Sync) {
 	}
 }
 
-task cleanFrontend(type: Delete) {
+tasks.register('cleanFrontend', Delete) {
 	delete(file("./frontend/build"))
 	delete(file("./src/main/resources/static"))
 }
 
-task testFrontend(type: Exec) {
+tasks.register('testFrontend', Exec) {
 	dependsOn("installFrontend")
 	commandLine("yarn", "--cwd", "frontend", "test")
 }
 
-task testJourney(type: Exec) {
+tasks.register('testJourney', Exec) {
 	dependsOn("installJourney")
 	commandLine("yarn", "--cwd", "journey", "test")
 }
 
-task installPerformance(type: Exec) {
+tasks.register('installPerformance', Exec) {
 	inputs.file(file("performance/yarn.lock"))
 	inputs.file(file("performance/package.json"))
 	outputs.dir(file("performance/node_modules"))
 	commandLine("yarn", "--cwd", "performance", "install")
 }
 
-task testPerformance(type: Exec) {
+tasks.register('testPerformance', Exec) {
 	dependsOn("installPerformance")
 	commandLine("yarn", "--cwd", "performance", "test")
 }
 
-task testAll() {
+tasks.register("testUnits"){
+	dependsOn("test", "testFrontend")
+}
+
+tasks.register('testAll') {
 	dependsOn("flywayTestDbClean", "test", "testFrontend", "testJourney")
 }
 
-task showRepositories {
+tasks.register('showRepositories') {
 	repositories.each {
 		println "repository: ${it.name} ('${it.url}')"
 	}
