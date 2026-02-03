@@ -8,6 +8,7 @@ import jestPlugin from 'eslint-plugin-jest';
 import jestDomPlugin from 'eslint-plugin-jest-dom';
 import testingLibraryPlugin from 'eslint-plugin-testing-library';
 import prettierConfig from 'eslint-config-prettier';
+import unimportedPlugin from 'eslint-plugin-unused-imports';
 
 export default [
     {
@@ -38,6 +39,7 @@ export default [
             react: reactPlugin,
             'react-hooks': reactHooksPlugin,
             import: importPlugin,
+            'unused-imports': unimportedPlugin,
         },
         rules: {
             ...js.configs.recommended.rules,
@@ -47,6 +49,7 @@ export default [
             ...prettierConfig.rules,
             'react/react-in-jsx-scope': 'off',
             'react/prop-types': 'off',
+            'unused-imports/no-unused-imports': 'error',
         },
         settings: {
             react: {
@@ -84,6 +87,7 @@ export default [
             'jest/no-standalone-expect': 'off',
             'testing-library/render-result-naming-convention': 'off',
             'testing-library/no-unnecessary-act': 'off',
+            'unused-imports/no-unused-imports': 'error',
         },
     },
 ];
