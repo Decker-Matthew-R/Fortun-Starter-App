@@ -1,7 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import App from '../App';
-import { act } from 'react-dom/test-utils';
 
 describe('render app', () => {
   const renderApp = () => render(<App />);
