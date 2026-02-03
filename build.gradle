@@ -14,6 +14,7 @@ plugins {
     id 'jacoco'
     id 'distribution'
     id 'application'
+    id 'com.diffplug.spotless' version '8.2.1'
     id "org.flywaydb.flyway" version "12.0.0"
 }
 
@@ -121,6 +122,17 @@ allprojects {
     }
 }
 
+spotless {
+    java {
+        target 'src/**/*.java'
+
+        googleJavaFormat('1.17.0').aosp()
+
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
+}
 
 tasks.named('resolveMainClassName') {
     dependsOn tasks.named('copyFrontend')
@@ -134,12 +146,10 @@ tasks.named('compileTestJava') {
     dependsOn('copyFrontend')
 }
 
-
 test {
     useJUnitPlatform()
     minHeapSize = "1024m"
     maxHeapSize = "2048m"
-
     dependsOn("flywayTestDbClean", "flywayTestDbMigrate")
 }
 
@@ -247,3 +257,5 @@ bootRun {
 clean {
     dependsOn(cleanFrontend)
 }
+
+apply from: 'gradle/format-project.gradle'
