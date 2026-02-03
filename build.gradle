@@ -17,6 +17,22 @@ plugins {
     id "org.flywaydb.flyway" version "12.0.0"
 }
 
+dependencyLocking {
+    lockAllConfigurations()
+    lockMode = LockMode.LENIENT
+    ignoredDependencies = []
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+
+    configureEach {
+        resolutionStrategy.activateDependencyLocking()
+    }
+}
+
 distributions {
     main {
         distributionBaseName.set(rootProject.name)
