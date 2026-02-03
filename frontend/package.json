@@ -34,10 +34,6 @@
         "@vitest/coverage-v8": "^4.0.18",
         "eslint": "^9.39.2",
         "eslint-config-prettier": "^10.1.8",
-        "eslint-config-react-app": "^7.0.1",
-        "eslint-plugin-import": "^2.32.0",
-        "eslint-plugin-jest": "^29.12.2",
-        "eslint-plugin-jest-dom": "^5.5.0",
         "eslint-plugin-react": "^7.37.5",
         "eslint-plugin-react-hooks": "^7.0.1",
         "eslint-plugin-testing-library": "^7.15.4",
@@ -50,9 +46,43 @@
         "vite-tsconfig-paths": "^6.0.5",
         "vitest": "^4.0.18"
     },
+    "resolutions": {
+        "braces": "^3.0.3",
+        "lodash": "^4.17.23",
+        "@babel/runtime": "^7.26.10",
+        "@babel/helpers": "^7.26.10",
+        "micromatch": "^4.0.8",
+        "js-yaml": "^4.1.1",
+        "brace-expansion": "^1.1.12"
+    },
     "eslintConfig": {
         "extends": [
-            "react-app"
-        ]
+            "eslint:recommended",
+            "plugin:react/recommended",
+            "plugin:react-hooks/recommended",
+            "plugin:@typescript-eslint/recommended",
+            "prettier"
+        ],
+        "parser": "@typescript-eslint/parser",
+        "parserOptions": {
+            "ecmaVersion": "latest",
+            "sourceType": "module",
+            "ecmaFeatures": {
+                "jsx": true
+            }
+        },
+        "plugins": [
+            "react",
+            "react-hooks",
+            "@typescript-eslint"
+        ],
+        "settings": {
+            "react": {
+                "version": "detect"
+            }
+        },
+        "rules": {
+            "react/react-in-jsx-scope": "off"
+        }
     }
 }
