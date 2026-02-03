@@ -1,14 +1,20 @@
 import org.flywaydb.gradle.task.FlywayCleanTask
+import org.flywaydb.gradle.task.FlywayMigrateTask
 
+buildscript {
+    dependencies {
+        classpath "org.flywaydb:flyway-database-postgresql:12.0.0"
+    }
+}
 
 plugins {
-	id 'org.springframework.boot' version '3.2.2'
-	id 'io.spring.dependency-management' version '1.1.4'
-	id 'java'
-	id 'jacoco'
-	id 'distribution'
-	id 'application'
-	id "org.flywaydb.flyway" version "9.22.0"
+    id 'org.springframework.boot' version '4.0.2'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'jacoco'
+    id 'distribution'
+    id 'application'
+    id "org.flywaydb.flyway" version "12.0.0"
 }
 
 distributions {
@@ -18,54 +24,55 @@ distributions {
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 
 }
 
 group = 'com'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
 
 flyway {
-	url = 'jdbc:postgresql://localhost:5432/fortuna_dev'
-	user = 'dev'
-	password = 'password'
-	cleanDisabled = false
-}
-task flywayTestDbClean (type: FlywayCleanTask) {
-	url = 'jdbc:postgresql://localhost:5432/fortuna_dev'
-	user = 'dev'
-	password = 'password'
-	cleanDisabled = false
+    url = 'jdbc:postgresql://localhost:5432/fortuna_dev'
+    user = 'dev'
+    password = 'password'
+    cleanDisabled = false
 }
 
+
 java {
-	sourceCompatibility = '17'
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.springframework.session:spring-session-jdbc'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.springframework.security:spring-security-test'
-	implementation 'org.yaml:snakeyaml:2.2'
-	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.session:spring-session-jdbc'
+
+    implementation 'org.flywaydb:flyway-core'
+
+    implementation 'org.yaml:snakeyaml:2.2'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+
+    runtimeOnly 'org.postgresql:postgresql'
+
+    compileOnly 'org.projectlombok:lombok'
+
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
 }
 
 application {
@@ -77,118 +84,150 @@ bootDistZip.enabled = false
 bootDistTar.enabled = false
 
 sourceSets {
-	main {
-		java {
-			String activeProfile = System.getenv('SPRING_PROFILES_ACTIVE')
-			if(activeProfile == null || !activeProfile.toLowerCase().equalsIgnoreCase("dev")) {
-				exclude '**/dev_only'
-			}
+    main {
+        java {
+            String activeProfile = System.getenv('SPRING_PROFILES_ACTIVE')
+            if (activeProfile == null || !activeProfile.toLowerCase().equalsIgnoreCase("dev")) {
+                exclude '**/dev_only'
+            }
 
-		}
-	}
+        }
+    }
 }
 
 allprojects {
-	gradle.projectsEvaluated {
-		tasks.withType(JavaCompile) {
-			options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-		}
-	}
+    gradle.projectsEvaluated {
+        tasks.withType(JavaCompile).tap {
+            configureEach {
+                options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+            }
+        }
+    }
 }
 
+
+tasks.named('resolveMainClassName') {
+    dependsOn tasks.named('copyFrontend')
+}
+
+tasks.named('jar') {
+    dependsOn('copyFrontend')
+}
+
+tasks.named('compileTestJava') {
+    dependsOn('copyFrontend')
+}
+
+
 test {
-	useJUnitPlatform()
-	minHeapSize = "1024m"
-	maxHeapSize = "2048m"
+    useJUnitPlatform()
+    minHeapSize = "1024m"
+    maxHeapSize = "2048m"
+
+    dependsOn("flywayTestDbClean", "flywayTestDbMigrate")
 }
 
 tasks.register('installFrontend', Exec) {
-	inputs.file(file("frontend/yarn.lock"))
-	inputs.file(file("frontend/package.json"))
-	commandLine("yarn", "--cwd", "frontend", "install")
+    inputs.file(file("frontend/yarn.lock"))
+    inputs.file(file("frontend/package.json"))
+    commandLine("yarn", "--cwd", "frontend", "install")
 }
 
 tasks.register('installJourney', Exec) {
-	inputs.file(file("journey/yarn.lock"))
-	inputs.file(file("journey/package.json"))
-	outputs.dir(file("journey/node_modules"))
-	commandLine("yarn", "--cwd", "journey", "install")
+    inputs.file(file("journey/yarn.lock"))
+    inputs.file(file("journey/package.json"))
+    outputs.dir(file("journey/node_modules"))
+    commandLine("yarn", "--cwd", "journey", "install")
 }
 
 tasks.register('buildFrontend', Exec) {
-	dependsOn("installFrontend")
-	inputs.dir(file("frontend"))
-	outputs.dir(file("frontend/build"))
-	commandLine("yarn", "--cwd", "frontend", "build")
+    dependsOn("installFrontend")
+    inputs.dir(file("frontend"))
+    outputs.dir(file("frontend/build"))
+    commandLine("yarn", "--cwd", "frontend", "build")
 }
 
 tasks.register('copyFrontend', Sync) {
-	dependsOn("buildFrontend")
-	from(file("./frontend/build"))
-	into(file("$buildDir/resources/main/static"))
-	doLast {
-		println("copied built frontend to static resources")
-	}
+    dependsOn("buildFrontend")
+    from(file("./frontend/build"))
+    into(file("${layout.buildDirectory.get()}/resources/main/static"))
+    doLast {
+        println("copied built frontend to static resources")
+    }
 }
 
 tasks.register('copyFrontendForIntelliJ', Sync) {
-	dependsOn("buildFrontend")
-	from(file("./frontend/build"))
-	into(file("./src/main/resources/static"))
-	doLast {
-		println("copied built frontend to static resources")
-	}
+    dependsOn("buildFrontend")
+    from(file("./frontend/build"))
+    into(file("./src/main/resources/static"))
+    doLast {
+        println("copied built frontend to static resources")
+    }
 }
 
 tasks.register('cleanFrontend', Delete) {
-	delete(file("./frontend/build"))
-	delete(file("./src/main/resources/static"))
+    delete(file("./frontend/build"))
+    delete(file("./src/main/resources/static"))
+}
+
+tasks.register('flywayTestDbClean', FlywayCleanTask) {
+    url = 'jdbc:postgresql://localhost:5432/fortuna_dev'
+    user = 'dev'
+    password = 'password'
+    cleanDisabled = false
+}
+
+tasks.register('flywayTestDbMigrate', FlywayMigrateTask) {
+    url = 'jdbc:postgresql://localhost:5433/fortuna_test'
+    user = 'fortuna_test'
+    password = 'password'
+    cleanDisabled = false
 }
 
 tasks.register('testFrontend', Exec) {
-	dependsOn("installFrontend")
-	commandLine("yarn", "--cwd", "frontend", "test")
+    dependsOn("installFrontend")
+    commandLine("yarn", "--cwd", "frontend", "test")
 }
 
 tasks.register('testJourney', Exec) {
-	dependsOn("installJourney")
-	commandLine("yarn", "--cwd", "journey", "test")
+    dependsOn("installJourney")
+    commandLine("yarn", "--cwd", "journey", "test")
 }
 
 tasks.register('installPerformance', Exec) {
-	inputs.file(file("performance/yarn.lock"))
-	inputs.file(file("performance/package.json"))
-	outputs.dir(file("performance/node_modules"))
-	commandLine("yarn", "--cwd", "performance", "install")
+    inputs.file(file("performance/yarn.lock"))
+    inputs.file(file("performance/package.json"))
+    outputs.dir(file("performance/node_modules"))
+    commandLine("yarn", "--cwd", "performance", "install")
 }
 
 tasks.register('testPerformance', Exec) {
-	dependsOn("installPerformance")
-	commandLine("yarn", "--cwd", "performance", "test")
+    dependsOn("installPerformance")
+    commandLine("yarn", "--cwd", "performance", "test")
 }
 
-tasks.register("testUnits"){
-	dependsOn("test", "testFrontend")
+tasks.register("testUnits") {
+    dependsOn("test", "testFrontend")
 }
 
 tasks.register('testAll') {
-	dependsOn("flywayTestDbClean", "test", "testFrontend", "testJourney")
+    dependsOn("flywayTestDbClean", "test", "testFrontend", "testJourney")
 }
 
 tasks.register('showRepositories') {
-	repositories.each {
-		println "repository: ${it.name} ('${it.url}')"
-	}
+    repositories.each {
+        println "repository: ${it.name} ('${it.url}')"
+    }
 }
 
 bootJar {
-	dependsOn(copyFrontend)
+    dependsOn(copyFrontend)
 }
 
 bootRun {
-	dependsOn(copyFrontend)
+    dependsOn(copyFrontend)
 }
 
 clean {
-	dependsOn(cleanFrontend)
+    dependsOn(cleanFrontend)
 }
