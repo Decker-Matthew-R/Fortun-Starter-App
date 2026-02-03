@@ -1,0 +1,52 @@
+tasks.register('formatFrontend', Exec) {
+    group = 'formatting'
+    description = 'Format frontend code'
+
+    workingDir = project.file('frontend')
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'yarn', 'format'
+    } else {
+        commandLine 'yarn', 'format'
+    }
+}
+
+tasks.register('lintFixFrontend', Exec) {
+    group = 'formatting'
+    description = 'Auto-fix frontend linting issues'
+
+    workingDir = project.file('frontend')
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'yarn', 'lint:fix'
+    } else {
+        commandLine 'yarn', 'lint:fix'
+    }
+}
+
+tasks.register('formatProject') {
+    group = 'formatting'
+    description = '🎨 Format and fix all code (frontend + backend)'
+
+    doFirst {
+        println("🚀 Formatting entire project...")
+        println("🔧 Starting backend formatting...")
+    }
+
+    doLast {
+        println("💅 Starting frontend formatting...")
+    }
+
+    finalizedBy("formatFrontend")
+}
+
+tasks.register('finishFormatting') {
+    doLast {
+        println("✨ Project formatting complete!")
+        println("🎯 All code has been formatted and linted")
+    }
+}
+
+// Set up the task chain
+formatProject.dependsOn("spotlessApply", "installFrontend")
+formatFrontend.mustRunAfter(formatProject)
+formatFrontend.finalizedBy("lintFixFrontend")
+lintFixFrontend.finalizedBy("finishFormatting")

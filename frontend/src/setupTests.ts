@@ -8,13 +8,13 @@ config.disabled = true;
 
 export const server = setupServer();
 beforeAll(() => {
-  server.listen();
+    server.listen();
 });
 
 afterEach(() => {
-  server.resetHandlers();
+    server.resetHandlers();
 });
 
 afterAll(() => {
-  server.close();
+    server.close();
 });
