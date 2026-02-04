@@ -1,20 +1,19 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
-import App from '../App';
+import userEvent from '@testing-library/user-event';
+import App from '../App.tsx';
 
 describe('render app', () => {
-    const renderApp = () => render(<App />);
-
-    it('should render app images', async () => {
-        renderApp();
+    it('should render and increment count', async () => {
+        const user = userEvent.setup();
+        render(<App />);
 
         const countButton = screen.getByRole('button', { name: 'count is 0' });
-
         expect(countButton).toBeVisible();
 
+        await user.click(countButton);
+
         await waitFor(() => {
-            countButton.click();
-            expect('count is 1').toBeVisible();
+            expect(screen.getByRole('button', { name: 'count is 1' })).toBeVisible();
         });
     });
 });

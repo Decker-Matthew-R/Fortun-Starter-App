@@ -92,6 +92,7 @@ dependencies {
     implementation 'org.springframework.session:spring-session-jdbc'
 
     implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
 
     implementation 'org.yaml:snakeyaml:2.2'
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
@@ -102,8 +103,10 @@ dependencies {
 
     annotationProcessor 'org.projectlombok:lombok'
 
+    testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
+    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework:spring-test'
 }
 
 application {
@@ -211,8 +214,8 @@ tasks.register('cleanFrontend', Delete) {
 }
 
 tasks.register('flywayTestDbClean', FlywayCleanTask) {
-    url = 'jdbc:postgresql://localhost:5432/fortuna_dev'
-    user = 'dev'
+    url = 'jdbc:postgresql://localhost:5433/fortuna_test'
+    user = 'fortuna_test'
     password = 'password'
     cleanDisabled = false
 }

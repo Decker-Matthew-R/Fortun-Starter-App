@@ -9,6 +9,7 @@ import jestDomPlugin from 'eslint-plugin-jest-dom';
 import testingLibraryPlugin from 'eslint-plugin-testing-library';
 import prettierConfig from 'eslint-config-prettier';
 import unimportedPlugin from 'eslint-plugin-unused-imports';
+import globals from 'globals';
 
 export default [
     {
@@ -67,7 +68,13 @@ export default [
         files: ['src/**/__tests__/**', 'src/**/*.test.{ts,tsx}'],
         languageOptions: {
             globals: {
-                jest: 'readonly',
+                ...globals.browser,
+                describe: 'readonly',
+                it: 'readonly',
+                expect: 'readonly',
+                beforeEach: 'readonly',
+                afterEach: 'readonly',
+                vi: 'readonly',
             },
         },
         plugins: {
