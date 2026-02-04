@@ -16,6 +16,20 @@ plugins {
     id 'application'
     id 'com.diffplug.spotless' version '8.2.1'
     id "org.flywaydb.flyway" version "12.0.0"
+    id 'org.owasp.dependencycheck' version '12.2.0'
+}
+
+dependencyCheck {
+    formats = ['HTML', 'JSON']
+    outputDirectory = 'build/reports'
+    nvd.apiKey = System.getenv('NVD_API_KEY')
+
+    scanSet = [
+        'frontend/package.json',
+        'frontend/yarn.lock',
+        'journey/package.json',
+        'journey/yarn.lock'
+    ]
 }
 
 dependencyLocking {
@@ -259,3 +273,4 @@ clean {
 }
 
 apply from: 'gradle/format-project.gradle'
+apply from: 'gradle/cve-report.gradle'
