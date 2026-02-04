@@ -1,0 +1,66 @@
+logging:
+    pattern:
+        dateformat: yyyy-MM-dd HH:mm:ss.SSS, UTC
+server:
+    port: 8080
+    servlet:
+        session:
+            cookie:
+                secure: true
+                http-only: true
+            ## Default, by required by APSC-DV-002270
+            tracking-modes: COOKIE
+    shutdown: graceful
+spring:
+    application:
+        name: fortuna
+    output:
+        ansi:
+            enabled: always
+    security:
+        oauth2:
+            client:
+                registration:
+                    google:
+                        client-id: test-client-id
+                        client-secret: test-client-secret
+    datasource:
+        url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5433}/${POSTGRES_DB:fortuna_test}
+        username: ${POSTGRES_USERNAME:fortuna_test}
+        password: ${POSTGRES_PASSWORD:password}
+        driver-class-name: org.postgresql.Driver
+        connectionProperties:
+            sslFactory: org.postgresql.ssl.DefaultJavaSSLFactory
+    session:
+        timeout: 900 #STIG: APSC-DV-000070
+    jpa:
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        properties:
+            hibernate:
+                jdbc:
+                    batch_size: 30
+                order_updates: true
+                insert_updates: true
+    #    show-sql: true
+    #    properties:
+    #      hibernate:
+    #        format_sql: true
+    profiles:
+        group:
+            journey:
+            dev: dev
+
+application:
+    hostname: http://localhost:8080
+    logout:
+        path: /logout
+    authentication:
+        success-redirect-uri: /
+        failure-redirect-uri: /errorPage
+        post-logout-redirect-uri: "{baseUrl}"
+    feature-flags:
+        useJobDescriptionAndPersonaMetrics: false
+app:
+    jwt:
+        secret: ${JWT_SECRET:abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890ab}
+        expiration-ms: ${JWT_EXPIRATION_MS:86400000}

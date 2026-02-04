@@ -1,27 +1,3 @@
-tasks.register('formatFrontend', Exec) {
-    group = 'formatting'
-    description = 'Format frontend code'
-
-    workingDir = project.file('frontend')
-    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-        commandLine 'cmd', '/c', 'yarn', 'format'
-    } else {
-        commandLine 'yarn', 'format'
-    }
-}
-
-tasks.register('lintFixFrontend', Exec) {
-    group = 'formatting'
-    description = 'Auto-fix frontend linting issues'
-
-    workingDir = project.file('frontend')
-    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
-        commandLine 'cmd', '/c', 'yarn', 'lint:fix'
-    } else {
-        commandLine 'yarn', 'lint:fix'
-    }
-}
-
 tasks.register('formatProject') {
     group = 'formatting'
     description = '🎨 Format and fix all code (frontend + backend)'
@@ -31,22 +7,61 @@ tasks.register('formatProject') {
         println("🔧 Starting backend formatting...")
     }
 
+    dependsOn 'spotlessApply'
+}
+
+tasks.register('backendComplete') {
+    dependsOn 'spotlessApply'
+
     doLast {
+        println("✅ Backend formatting complete!")
         println("💅 Starting frontend formatting...")
     }
+}
 
-    finalizedBy("formatFrontend")
+tasks.register('formatFrontend', Exec) {
+    group = 'formatting'
+    description = 'Format frontend code'
+
+    dependsOn 'backendComplete'
+
+    workingDir = project.file('frontend')
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'yarn', 'format'
+    } else {
+        commandLine 'yarn', 'format'
+    }
+
+    doLast {
+        println("✅ Frontend prettier formatting complete!")
+    }
+}
+
+tasks.register('lintFixFrontend', Exec) {
+    group = 'formatting'
+    description = 'Auto-fix frontend linting issues'
+
+    dependsOn 'formatFrontend'
+
+    workingDir = project.file('frontend')
+    if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/c', 'yarn', 'lint:fix'
+    } else {
+        commandLine 'yarn', 'lint:fix'
+    }
+
+    doLast {
+        println("✅ Frontend ESLint formatting complete!")
+    }
 }
 
 tasks.register('finishFormatting') {
+    dependsOn 'lintFixFrontend'
+
     doLast {
         println("✨ Project formatting complete!")
         println("🎯 All code has been formatted and linted")
     }
 }
 
-// Set up the task chain
-formatProject.dependsOn("spotlessApply", "installFrontend")
-formatFrontend.mustRunAfter(formatProject)
-formatFrontend.finalizedBy("lintFixFrontend")
-lintFixFrontend.finalizedBy("finishFormatting")
+formatProject.finalizedBy 'finishFormatting'
