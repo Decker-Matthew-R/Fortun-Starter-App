@@ -61,11 +61,6 @@ repositories {
 
 group = 'com'
 version = '0.0.1-SNAPSHOT'
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
-
 flyway {
     url = 'jdbc:postgresql://localhost:5432/fortuna_dev'
     user = 'dev'
@@ -73,7 +68,14 @@ flyway {
     cleanDisabled = false
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
+jacoco {
+    toolVersion = "0.8.13"
+}
 
 configurations {
     compileOnly {
@@ -167,6 +169,7 @@ tasks.named('compileTestJava') {
 
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport
     minHeapSize = "1024m"
     maxHeapSize = "2048m"
     dependsOn("flywayTestDbClean", "flywayTestDbMigrate")
@@ -283,3 +286,4 @@ clean {
 
 apply from: 'gradle/format-project.gradle'
 apply from: 'gradle/cve-report.gradle'
+apply from: 'gradle/jacoco-summary.gradle'
