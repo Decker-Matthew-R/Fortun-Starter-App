@@ -61,6 +61,10 @@ repositories {
 
 group = 'com'
 version = '0.0.1-SNAPSHOT'
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
 
 flyway {
     url = 'jdbc:postgresql://localhost:5432/fortuna_dev'
@@ -70,10 +74,6 @@ flyway {
 }
 
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
-}
 
 configurations {
     compileOnly {
@@ -93,6 +93,8 @@ dependencies {
 
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
+
 
     implementation 'org.yaml:snakeyaml:2.2'
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
@@ -227,27 +229,31 @@ tasks.register('flywayTestDbMigrate', FlywayMigrateTask) {
     cleanDisabled = false
 }
 
+tasks.register('flywayJourneyTestDbClean', FlywayCleanTask) {
+    url = 'jdbc:postgresql://localhost:5434/fortuna_journey'
+    user = 'fortuna_journey'
+    password = 'password'
+    cleanDisabled = false
+}
+
+tasks.register('flywayJourneyTestDbMigrate', FlywayMigrateTask) {
+    url = 'jdbc:postgresql://localhost:5434/fortuna_journey'
+    user = 'fortuna_journey'
+    password = 'password'
+    cleanDisabled = false
+}
+
 tasks.register('testFrontend', Exec) {
     dependsOn("installFrontend")
     commandLine("yarn", "--cwd", "frontend", "test")
 }
 
 tasks.register('testJourney', Exec) {
-    dependsOn("installJourney")
+    dependsOn("installJourney", 'flywayJourneyTestDbClean', 'flywayJourneyTestDbMigrate')
     commandLine("yarn", "--cwd", "journey", "test")
+    environment("SPRING_PROFILES_ACTIVE", "journey")
 }
 
-tasks.register('installPerformance', Exec) {
-    inputs.file(file("performance/yarn.lock"))
-    inputs.file(file("performance/package.json"))
-    outputs.dir(file("performance/node_modules"))
-    commandLine("yarn", "--cwd", "performance", "install")
-}
-
-tasks.register('testPerformance', Exec) {
-    dependsOn("installPerformance")
-    commandLine("yarn", "--cwd", "performance", "test")
-}
 
 tasks.register("testUnits") {
     dependsOn("test", "testFrontend")
