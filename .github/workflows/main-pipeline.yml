@@ -99,8 +99,6 @@ jobs:
                       GRADLE_OPTS: "-Xmx3g -XX:+UseG1GC"
               run: |
                       echo "🔍 Scanning for CVEs..."
-                      rm -rf ~/.gradle/dependency-check/ && echo "✅ Cleared ~/.gradle/dependency-check/" || echo "⚠️  Directory didn't exist"
-                      rm -rf /tmp/dependency-check* && echo "✅ Cleared /tmp/dependency-check*" || echo "⚠️  No temp files"
                       ./gradlew cveReport
                       
                       echo "Checking for high-severity vulnerabilities..."
