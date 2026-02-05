@@ -1,4 +1,72 @@
-name: postgres-test-template.yml
+name: PostgreSQL Test Template
+
 on:
+    workflow_call:
+        inputs:
+            test-command:
+                description: 'Gradle command to run tests'
+                required: true
+                type: string
+            postgres-db:
+                description: 'PostgreSQL database name'
+                required: true
+                type: string
+            postgres-user:
+                description: 'PostgreSQL username'
+                required: true
+                type: string
+            host-port:
+                description: 'Host port for PostgreSQL'
+                required: true
+                type: string
+            container-port:
+                description: 'Container port for PostgreSQL'
+                required: false
+                type: string
+                default: '5432'
+            build-required:
+                description: 'Whether to run gradle build first'
+                required: false
+                type: boolean
+                default: false
 
 jobs:
+    test:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+        services:
+            postgres:
+                image: postgres:16
+                ports:
+                    - ${{ inputs.host-port }}:${{ inputs.container-port }}
+                env:
+                    POSTGRES_USER: ${{ inputs.postgres-user }}
+                    POSTGRES_PASSWORD: password
+                    POSTGRES_DB: ${{ inputs.postgres-db }}
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Setup Java and Gradle
+              uses: ./.github/actions/set-up-java-gradle
+
+            - name: Build with Gradle Wrapper
+              if: ${{ inputs.build-required }}
+              run: ./gradlew build
+              env:
+                  SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:${{ inputs.host-port }}/${{ inputs.postgres-db }}
+                  SPRING_DATASOURCE_USERNAME: ${{ inputs.postgres-user }}
+                  SPRING_DATASOURCE_PASSWORD: password
+
+            - name: Run Tests
+              run: ${{ inputs.test-command }}
+              env:
+                  SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:${{ inputs.host-port }}/${{ inputs.postgres-db }}
+                  SPRING_DATASOURCE_USERNAME: ${{ inputs.postgres-user }}
+                  SPRING_DATASOURCE_PASSWORD: password
