@@ -1,5 +1,7 @@
 package com.fortuna.exception;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.fortuna.exception.model.ErrorResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -7,8 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.ServletWebRequest;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class GlobalExceptionHandlerTest {
 
@@ -18,11 +18,11 @@ class GlobalExceptionHandlerTest {
     @DisplayName("should handle MetricSerializationException with 500 status")
     void shouldHandleMetricSerializationException() {
         MetricSerializationException exception =
-            new MetricSerializationException(new RuntimeException("Test error"));
+                new MetricSerializationException(new RuntimeException("Test error"));
         ServletWebRequest request = new ServletWebRequest(new MockHttpServletRequest());
 
         ResponseEntity<ErrorResponse> response =
-            handler.handleMetricSerializationException(exception, request);
+                handler.handleMetricSerializationException(exception, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -41,7 +41,7 @@ class GlobalExceptionHandlerTest {
         ServletWebRequest request = new ServletWebRequest(new MockHttpServletRequest());
 
         ResponseEntity<ErrorResponse> response =
-            handler.handleIllegalArgumentException(exception, request);
+                handler.handleIllegalArgumentException(exception, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -57,8 +57,7 @@ class GlobalExceptionHandlerTest {
         RuntimeException exception = new RuntimeException("Runtime error");
         ServletWebRequest request = new ServletWebRequest(new MockHttpServletRequest());
 
-        ResponseEntity<ErrorResponse> response =
-            handler.handleRuntimeException(exception, request);
+        ResponseEntity<ErrorResponse> response = handler.handleRuntimeException(exception, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -74,8 +73,7 @@ class GlobalExceptionHandlerTest {
         Exception exception = new Exception("Generic error");
         ServletWebRequest request = new ServletWebRequest(new MockHttpServletRequest());
 
-        ResponseEntity<ErrorResponse> response =
-            handler.handleGenericException(exception, request);
+        ResponseEntity<ErrorResponse> response = handler.handleGenericException(exception, request);
 
         assertNotNull(response);
         assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
@@ -89,21 +87,21 @@ class GlobalExceptionHandlerTest {
     @DisplayName("should generate unique errorIds for each exception")
     void shouldGenerateUniqueErrorIds() {
         MetricSerializationException exception1 =
-            new MetricSerializationException(new RuntimeException("Test"));
+                new MetricSerializationException(new RuntimeException("Test"));
         MetricSerializationException exception2 =
-            new MetricSerializationException(new RuntimeException("Test"));
+                new MetricSerializationException(new RuntimeException("Test"));
         ServletWebRequest request = new ServletWebRequest(new MockHttpServletRequest());
 
         ResponseEntity<ErrorResponse> response1 =
-            handler.handleMetricSerializationException(exception1, request);
+                handler.handleMetricSerializationException(exception1, request);
         ResponseEntity<ErrorResponse> response2 =
-            handler.handleMetricSerializationException(exception2, request);
+                handler.handleMetricSerializationException(exception2, request);
 
         assert response1.getBody() != null;
         assert response2.getBody() != null;
         assertNotEquals(
-            response1.getBody().getErrorId(),
-            response2.getBody().getErrorId(),
-            "Each exception should have a unique errorId");
+                response1.getBody().getErrorId(),
+                response2.getBody().getErrorId(),
+                "Each exception should have a unique errorId");
     }
 }

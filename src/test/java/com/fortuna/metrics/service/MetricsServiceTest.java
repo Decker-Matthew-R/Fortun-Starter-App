@@ -129,17 +129,17 @@ class MetricsServiceTest {
     @DisplayName("should throw MetricSerializationException when ObjectMapper fails")
     void shouldThrowMetricSerializationExceptionWhenObjectMapperFails() throws Exception {
         MetricEventDTO metricEventDTO =
-            new MetricEventDTO(MetricEventType.BUTTON_CLICK, Map.of("screen", "home"), null);
+                new MetricEventDTO(MetricEventType.BUTTON_CLICK, Map.of("screen", "home"), null);
 
         when(mockObjectMapper.writeValueAsString(any()))
-            .thenThrow(new RuntimeException("Serialization failed"));
+                .thenThrow(new RuntimeException("Serialization failed"));
 
         MetricSerializationException exception =
-            assertThrows(
-                MetricSerializationException.class,
-                () -> {
-                    metricsService.saveMetricEvent(metricEventDTO);
-                });
+                assertThrows(
+                        MetricSerializationException.class,
+                        () -> {
+                            metricsService.saveMetricEvent(metricEventDTO);
+                        });
 
         assertEquals(MetricSerializationException.MESSAGE, exception.getMessage());
     }
