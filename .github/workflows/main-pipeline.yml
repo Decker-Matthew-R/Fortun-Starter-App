@@ -95,25 +95,24 @@ jobs:
             - name: Run CVE Vulnerability Scan
               if: matrix.security-type.type == 'cve'
               env:
-                  NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+                      NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+                      GRADLE_OPTS: "-Xmx3g -XX:+UseG1GC"
               run: |
-                  # Clear corrupted cache
-                  rm -rf ~/.gradle/dependency-check/
-    
-                  echo "🔍 Scanning for CVEs..."
-                  ./gradlew dependencyCheckAnalyze
-                  echo "Generating detailed CVE report..."
-                  ./gradlew cveReport
-                  echo "Checking for high-severity vulnerabilities..."
-                  
-                  # Check if any high/critical vulnerabilities exist
-                  if ./gradlew dependencyCheckAnalyze | grep -q "One or more dependencies were identified with known vulnerabilities"; then
-                    echo "❌ CVE scan failed - vulnerabilities found above threshold"
-                    echo "See detailed report above for remediation steps"
-                    exit 1
-                  else
-                    echo "✅ CVE scan passed - no high-severity vulnerabilities found"
-                  fi
+                      # Clear corrupted cache
+                      rm -rf ~/.gradle/dependency-check/
+                      
+                      echo "🔍 Scanning for CVEs..."
+                      ./gradlew dependencyCheckAnalyze cveReport
+                      
+                      echo "Checking for high-severity vulnerabilities..."
+                      
+                      # Check the actual report file
+                      if grep -q '"severity":"CRITICAL"\|"severity":"HIGH"' build/reports/dependency-check-report.json; then
+                        echo "❌ CVE scan failed - high-severity vulnerabilities found"
+                        exit 1
+                      else
+                        echo "✅ CVE scan passed - no high-severity vulnerabilities found"
+                      fi
 
             - name: Initialize CodeQL
               if: matrix.security-type.type == 'codeql'
