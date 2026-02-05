@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fortuna.metrics.controller.model.MetricEventDTO;
 import com.fortuna.metrics.repository.MetricEventEntity;
 import com.fortuna.metrics.repository.MetricsRepository;
-import lombok.extern.slf4j.Slf4j;
 import java.sql.Timestamp;
 import java.time.Instant;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j

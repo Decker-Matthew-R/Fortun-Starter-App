@@ -10,11 +10,8 @@ import com.fortuna.metrics.controller.model.MetricEventDTO;
 import com.fortuna.metrics.controller.model.MetricEventType;
 import com.fortuna.metrics.repository.MetricEventEntity;
 import com.fortuna.metrics.repository.MetricsRepository;
-
-import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Map;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,10 +32,11 @@ class MetricsServiceTest {
     @BeforeEach
     void setUp() throws Exception {
         when(mockObjectMapper.writeValueAsString(any()))
-            .thenAnswer(invocation -> {
-                Object arg = invocation.getArgument(0);
-                return arg != null ? arg.toString() : "{}";
-            });
+                .thenAnswer(
+                        invocation -> {
+                            Object arg = invocation.getArgument(0);
+                            return arg != null ? arg.toString() : "{}";
+                        });
     }
 
     @Test
@@ -129,17 +127,18 @@ class MetricsServiceTest {
     @Test
     @DisplayName("should throw RuntimeException when ObjectMapper fails")
     void shouldThrowRuntimeExceptionWhenObjectMapperFails() throws Exception {
-        MetricEventDTO metricEventDTO = new MetricEventDTO(
-            MetricEventType.BUTTON_CLICK,
-            Map.of("screen", "home"),
-            null);
+        MetricEventDTO metricEventDTO =
+                new MetricEventDTO(MetricEventType.BUTTON_CLICK, Map.of("screen", "home"), null);
 
         when(mockObjectMapper.writeValueAsString(any()))
-            .thenThrow(new RuntimeException("Serialization failed"));
+                .thenThrow(new RuntimeException("Serialization failed"));
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-            metricsService.saveMetricEvent(metricEventDTO);
-        });
+        RuntimeException exception =
+                assertThrows(
+                        RuntimeException.class,
+                        () -> {
+                            metricsService.saveMetricEvent(metricEventDTO);
+                        });
 
         assertEquals("Failed to serialize metadata", exception.getMessage());
     }
