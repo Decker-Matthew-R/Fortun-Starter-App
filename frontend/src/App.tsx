@@ -3,9 +3,12 @@ import reactLogo from './assets/react.svg';
 import viteLogo from './assets/vite.svg';
 import './App.css';
 import { Button, Typography } from '@mui/material';
+import { useMetrics } from './metrics/client/MetricsClient.ts';
+import { METRIC_EVENT_TYPE } from './metrics/model/METRIC_EVENT_TYPE.ts';
 
 function App() {
     const [count, setCount] = useState(0);
+    const { saveMetricEvent } = useMetrics();
 
     return (
         <>
@@ -37,7 +40,13 @@ function App() {
             <div className='card'>
                 <Button
                     variant={'contained'}
-                    onClick={() => setCount((count) => count + 1)}
+                    onClick={() => {
+                        setCount((count) => count + 1);
+                        void saveMetricEvent(METRIC_EVENT_TYPE.BUTTON_CLICK, {
+                            triggerId: 'Count Button',
+                            screen: 'Home',
+                        });
+                    }}
                 >
                     count is {count}
                 </Button>

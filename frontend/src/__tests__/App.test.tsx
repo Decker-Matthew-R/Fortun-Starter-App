@@ -1,9 +1,16 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { vi } from 'vitest';
 import App from '../App.tsx';
+import * as MetricsClient from '../metrics/client/MetricsClient';
 
 describe('render app', () => {
     it('should render and increment count', async () => {
+        // Mock the metrics service
+        vi.spyOn(MetricsClient, 'useMetrics').mockReturnValue({
+            saveMetricEvent: vi.fn().mockResolvedValue(undefined),
+        });
+
         const user = userEvent.setup();
         render(<App />);
 

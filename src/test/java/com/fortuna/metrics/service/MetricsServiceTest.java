@@ -1,14 +1,18 @@
 package com.fortuna.metrics.service;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fortuna.metrics.controller.model.MetricEventDTO;
 import com.fortuna.metrics.controller.model.MetricEventType;
 import com.fortuna.metrics.repository.MetricEventEntity;
 import com.fortuna.metrics.repository.MetricsRepository;
 import java.sql.Timestamp;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +25,19 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class MetricsServiceTest {
 
     @Mock MetricsRepository mockMetricsRepository;
+    @Mock ObjectMapper mockObjectMapper;
 
     @InjectMocks MetricsService metricsService;
+
+    @BeforeEach
+    void setUp() throws Exception {
+        when(mockObjectMapper.writeValueAsString(any()))
+                .thenAnswer(
+                        invocation -> {
+                            Object arg = invocation.getArgument(0);
+                            return arg != null ? arg.toString() : "{}";
+                        });
+    }
 
     @Test
     @DisplayName("when a metric event is received, the repository is called with correct data")
@@ -107,5 +122,24 @@ class MetricsServiceTest {
 
         verify(mockMetricsRepository)
                 .save(ArgumentCaptor.forClass(MetricEventEntity.class).capture());
+    }
+
+    @Test
+    @DisplayName("should throw RuntimeException when ObjectMapper fails")
+    void shouldThrowRuntimeExceptionWhenObjectMapperFails() throws Exception {
+        MetricEventDTO metricEventDTO =
+                new MetricEventDTO(MetricEventType.BUTTON_CLICK, Map.of("screen", "home"), null);
+
+        when(mockObjectMapper.writeValueAsString(any()))
+                .thenThrow(new RuntimeException("Serialization failed"));
+
+        RuntimeException exception =
+                assertThrows(
+                        RuntimeException.class,
+                        () -> {
+                            metricsService.saveMetricEvent(metricEventDTO);
+                        });
+
+        assertEquals("Failed to serialize metadata", exception.getMessage());
     }
 }
