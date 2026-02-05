@@ -96,11 +96,10 @@ jobs:
               if: matrix.security-type.type == 'cve'
               env:
                       NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-                      GRADLE_OPTS: "-Xmx3g -XX:+UseG1GC"
               run: |
-                      # Clear corrupted cache
                       rm -rf ~/.gradle/dependency-check/
-                      
+                      rm -rf /tmp/dependency-check*
+                  
                       echo "🔍 Scanning for CVEs..."
                       ./gradlew cveReport
                       
