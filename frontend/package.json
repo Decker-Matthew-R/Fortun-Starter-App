@@ -9,7 +9,9 @@
         "build": "vite build",
         "format": "prettier --write .",
         "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-        "test": "vitest run --coverage"
+        "test": "vitest run --coverage",
+        "preview": "vite preview",
+        "start-optimized": "yarn build && vite preview"
     },
     "dependencies": {
         "@mui/icons-material": "^7.3.7",
@@ -50,7 +52,10 @@
         "vite": "^7.3.1",
         "vite-plugin-svgr": "^4.5.0",
         "vite-tsconfig-paths": "^6.0.5",
-        "vitest": "^4.0.18"
+        "vitest": "^4.0.18",
+        "terser": "^5.24.0",
+        "vite-plugin-compression": "^0.5.1",
+        "rollup-plugin-visualizer": "^6.0.3"
     },
     "resolutions": {
         "braces": "^3.0.3",
