@@ -1,6 +1,7 @@
 package com.fortuna.metrics.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fortuna.exception.MetricSerializationException;
 import com.fortuna.metrics.controller.model.MetricEventDTO;
 import com.fortuna.metrics.repository.MetricEventEntity;
 import com.fortuna.metrics.repository.MetricsRepository;
@@ -37,8 +38,7 @@ public class MetricsService {
                     .userId(metricEventDTO.getUserId())
                     .build();
         } catch (Exception e) {
-            log.error("Failed to serialize metric event metadata", e);
-            throw new RuntimeException("Failed to serialize metadata", e);
+            throw new MetricSerializationException(e);
         }
     }
 }

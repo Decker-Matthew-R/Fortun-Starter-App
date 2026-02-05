@@ -6,6 +6,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fortuna.exception.MetricSerializationException;
 import com.fortuna.metrics.controller.model.MetricEventDTO;
 import com.fortuna.metrics.controller.model.MetricEventType;
 import com.fortuna.metrics.repository.MetricEventEntity;
@@ -125,21 +126,21 @@ class MetricsServiceTest {
     }
 
     @Test
-    @DisplayName("should throw RuntimeException when ObjectMapper fails")
-    void shouldThrowRuntimeExceptionWhenObjectMapperFails() throws Exception {
+    @DisplayName("should throw MetricSerializationException when ObjectMapper fails")
+    void shouldThrowMetricSerializationExceptionWhenObjectMapperFails() throws Exception {
         MetricEventDTO metricEventDTO =
-                new MetricEventDTO(MetricEventType.BUTTON_CLICK, Map.of("screen", "home"), null);
+            new MetricEventDTO(MetricEventType.BUTTON_CLICK, Map.of("screen", "home"), null);
 
         when(mockObjectMapper.writeValueAsString(any()))
-                .thenThrow(new RuntimeException("Serialization failed"));
+            .thenThrow(new RuntimeException("Serialization failed"));
 
-        RuntimeException exception =
-                assertThrows(
-                        RuntimeException.class,
-                        () -> {
-                            metricsService.saveMetricEvent(metricEventDTO);
-                        });
+        MetricSerializationException exception =
+            assertThrows(
+                MetricSerializationException.class,
+                () -> {
+                    metricsService.saveMetricEvent(metricEventDTO);
+                });
 
-        assertEquals("Failed to serialize metadata", exception.getMessage());
+        assertEquals(MetricSerializationException.MESSAGE, exception.getMessage());
     }
 }
