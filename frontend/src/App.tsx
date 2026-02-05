@@ -49,8 +49,6 @@ function App() {
                     }}
                 >
                     count is {count}
-
-
                 </Button>
                 <Button
                     color={'secondary'}
@@ -71,7 +69,5 @@ function App() {
         </>
     );
 }
-
-
 
 export default App;
