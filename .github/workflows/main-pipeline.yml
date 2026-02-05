@@ -102,7 +102,7 @@ jobs:
                       rm -rf ~/.gradle/dependency-check/
                       
                       echo "🔍 Scanning for CVEs..."
-                      ./gradlew dependencyCheckAnalyze cveReport
+                      ./gradlew cveReport
                       
                       echo "Checking for high-severity vulnerabilities..."
                       
