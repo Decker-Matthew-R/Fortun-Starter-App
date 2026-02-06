@@ -23,5 +23,4 @@ public class StripeConfig {
         Stripe.apiKey = secretKey;
         log.info("Stripe API initialized");
     }
-
 }

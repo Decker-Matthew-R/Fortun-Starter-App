@@ -1,10 +1,10 @@
 package com.fortuna.metrics.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fortuna.metrics.exception.MetricSerializationException;
 import com.fortuna.metrics.controller.model.MetricEventDTO;
-import com.fortuna.metrics.repository.model.MetricEventEntity;
+import com.fortuna.metrics.exception.MetricSerializationException;
 import com.fortuna.metrics.repository.MetricsRepository;
+import com.fortuna.metrics.repository.model.MetricEventEntity;
 import java.sql.Timestamp;
 import java.time.Instant;
 import lombok.AllArgsConstructor;

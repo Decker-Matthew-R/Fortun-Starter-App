@@ -16,4 +16,3 @@ public class PaymentException extends RuntimeException {
         super("Failed to process payment: " + cause.getMessage(), cause);
     }
 }
-
