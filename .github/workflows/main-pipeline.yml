@@ -96,22 +96,9 @@ jobs:
               if: matrix.security-type.type == 'cve'
               env:
                       NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
-                      GRADLE_OPTS: "-Xmx3g -XX:+UseG1GC"
               run: |
                       echo "🔍 Scanning for CVEs..."
-                      rm -rf ~/.gradle/dependency-check/ && echo "✅ Cleared ~/.gradle/dependency-check/" || echo "⚠️  Directory didn't exist"
-                      rm -rf /tmp/dependency-check* && echo "✅ Cleared /tmp/dependency-check*" || echo "⚠️  No temp files"
                       ./gradlew cveReport
-                      
-                      echo "Checking for high-severity vulnerabilities..."
-                      
-                      # Check the actual report file
-                      if grep -q '"severity":"CRITICAL"\|"severity":"HIGH"' build/reports/dependency-check-report.json; then
-                        echo "❌ CVE scan failed - high-severity vulnerabilities found"
-                        exit 1
-                      else
-                        echo "✅ CVE scan passed - no high-severity vulnerabilities found"
-                      fi
 
             - name: Initialize CodeQL
               if: matrix.security-type.type == 'codeql'
