@@ -83,6 +83,14 @@ configurations {
     }
 }
 
+configurations.configureEach {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'org.assertj' && details.requested.name == 'assertj-core') {
+            details.useVersion('3.27.7')
+            details.because('CVE-2026-24400')
+        }
+    }
+}
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
