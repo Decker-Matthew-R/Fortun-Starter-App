@@ -2,7 +2,7 @@ package com.fortuna.testFactories;
 
 import com.fortuna.metrics.controller.model.MetricEventDTO;
 import com.fortuna.metrics.controller.model.MetricEventType;
-import com.fortuna.metrics.repository.MetricEventEntity;
+import com.fortuna.metrics.repository.model.MetricEventEntity;
 import java.sql.Timestamp;
 import java.util.Date;
 import net.minidev.json.JSONObject;
