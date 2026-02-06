@@ -101,10 +101,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.session:spring-session-jdbc'
 
+    implementation 'com.stripe:stripe-java:31.3.0'
+
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-database-postgresql'
     implementation 'org.springframework.boot:spring-boot-starter-flyway'
-
 
     implementation 'org.yaml:snakeyaml:2.2'
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'

@@ -6,10 +6,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fortuna.exception.MetricSerializationException;
+import com.fortuna.metrics.exception.MetricSerializationException;
 import com.fortuna.metrics.controller.model.MetricEventDTO;
 import com.fortuna.metrics.controller.model.MetricEventType;
-import com.fortuna.metrics.repository.MetricEventEntity;
+import com.fortuna.metrics.repository.model.MetricEventEntity;
 import com.fortuna.metrics.repository.MetricsRepository;
 import java.sql.Timestamp;
 import java.util.Map;

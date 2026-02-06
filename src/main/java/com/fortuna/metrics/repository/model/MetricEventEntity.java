@@ -1,4 +1,4 @@
-package com.fortuna.metrics.repository;
+package com.fortuna.metrics.repository.model;
 
 import jakarta.persistence.*;
 import java.sql.Timestamp;

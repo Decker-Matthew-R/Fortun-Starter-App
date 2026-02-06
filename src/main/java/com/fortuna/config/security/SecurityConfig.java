@@ -1,4 +1,4 @@
-package com.fortuna.config;
+package com.fortuna.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

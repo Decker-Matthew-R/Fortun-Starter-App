@@ -1,9 +1,9 @@
 package com.fortuna.metrics.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fortuna.exception.MetricSerializationException;
+import com.fortuna.metrics.exception.MetricSerializationException;
 import com.fortuna.metrics.controller.model.MetricEventDTO;
-import com.fortuna.metrics.repository.MetricEventEntity;
+import com.fortuna.metrics.repository.model.MetricEventEntity;
 import com.fortuna.metrics.repository.MetricsRepository;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -34,7 +34,7 @@ public class MetricsService {
             return MetricEventEntity.builder()
                     .event(metricEventDTO.getEvent().name())
                     .eventTime(Timestamp.from(Instant.now()))
-                    .metadata(jsonMetadata) // Now valid JSON
+                    .metadata(jsonMetadata)
                     .userId(metricEventDTO.getUserId())
                     .build();
         } catch (Exception e) {

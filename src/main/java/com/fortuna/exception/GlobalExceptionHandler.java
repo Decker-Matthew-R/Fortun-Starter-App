@@ -2,6 +2,9 @@ package com.fortuna.exception;
 
 import com.fortuna.exception.model.ErrorResponse;
 import java.util.UUID;
+
+import com.fortuna.metrics.exception.MetricSerializationException;
+import com.fortuna.payment.exception.PaymentException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +15,23 @@ import org.springframework.web.context.request.WebRequest;
 @RestControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(PaymentException.class)
+    public ResponseEntity<ErrorResponse> handlePaymentException(
+        PaymentException ex, WebRequest request) {
+        String errorId = UUID.randomUUID().toString();
+        log.error("Payment exception occurred [errorId: {}]", errorId, ex);
+
+        ErrorResponse errorResponse =
+            ErrorResponse.builder()
+                .errorId(errorId)
+                .message(ex.getMessage())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .timestamp(System.currentTimeMillis())
+                .build();
+
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler(MetricSerializationException.class)
     public ResponseEntity<ErrorResponse> handleMetricSerializationException(

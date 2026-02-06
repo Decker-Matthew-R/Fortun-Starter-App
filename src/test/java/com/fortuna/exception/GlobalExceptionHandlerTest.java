@@ -3,6 +3,7 @@ package com.fortuna.exception;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.fortuna.exception.model.ErrorResponse;
+import com.fortuna.metrics.exception.MetricSerializationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
