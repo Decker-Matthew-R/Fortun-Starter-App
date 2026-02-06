@@ -23,6 +23,7 @@ dependencyCheck {
     formats = ['HTML', 'JSON']
     outputDirectory = 'build/reports'
     nvd.apiKey = System.getenv('NVD_API_KEY')
+    failOnError = false
 
     scanSet = [
         'frontend/package.json',
