@@ -49,6 +49,9 @@ spring:
         group:
             journey:
             dev: dev
+stripe:
+    secret-key: ${STRIPE_SECRET_KEY}
+    publishable-key: ${STRIPE_PUBLISHABLE_KEY}
 
 application:
     hostname: http://localhost:8080

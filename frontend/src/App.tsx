@@ -5,10 +5,20 @@ import './App.css';
 import { Button, Typography } from '@mui/material';
 import { useMetrics } from './metrics/client/MetricsClient.ts';
 import { METRIC_EVENT_TYPE } from './metrics/model/METRIC_EVENT_TYPE.ts';
+import { StripePaymentProvider } from './payment/components/StripePaymentProvider.tsx';
+import { PaymentButton } from './payment/components/PaymentButton.tsx';
 
 function App() {
     const [count, setCount] = useState(0);
     const { saveMetricEvent } = useMetrics();
+
+    const handlePaymentSuccess = (paymentIntentId: string) => {
+        console.log('Payment succeeded:', paymentIntentId);
+    };
+
+    const handlePaymentError = (error: string) => {
+        console.error('Payment failed:', error);
+    };
 
     return (
         <>
@@ -56,9 +66,14 @@ function App() {
                 >
                     This Button Does Nothing
                 </Button>
-                <p>
-                    Edit <code>src/App.tsx</code> and save to test HMR
-                </p>
+                <StripePaymentProvider>
+                    <PaymentButton
+                        amount={1000}
+                        currency='usd'
+                        onSuccess={handlePaymentSuccess}
+                        onError={handlePaymentError}
+                    />
+                </StripePaymentProvider>
             </div>
             <Typography
                 variant={'body1'}

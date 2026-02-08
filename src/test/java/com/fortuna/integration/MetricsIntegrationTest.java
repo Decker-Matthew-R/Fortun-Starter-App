@@ -9,8 +9,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fortuna.metrics.controller.model.MetricEventDTO;
 import com.fortuna.metrics.controller.model.MetricEventType;
-import com.fortuna.metrics.repository.MetricEventEntity;
 import com.fortuna.metrics.repository.MetricsRepository;
+import com.fortuna.metrics.repository.model.MetricEventEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.Instant;

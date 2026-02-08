@@ -1,4 +1,4 @@
-package com.fortuna.exception;
+package com.fortuna.metrics.exception;
 
 public class MetricSerializationException extends RuntimeException {
     public static final String MESSAGE = "Failed to serialize metric event metadata";

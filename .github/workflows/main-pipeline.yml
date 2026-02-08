@@ -46,6 +46,8 @@ jobs:
                   SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:${{ matrix.test-type.port }}/${{ matrix.test-type.db }}
                   SPRING_DATASOURCE_USERNAME: ${{ matrix.test-type.user }}
                   SPRING_DATASOURCE_PASSWORD: password
+                  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+                  STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
 
             - name: Run ${{ matrix.test-type.name }} Tests
               run: ${{ matrix.test-type.command }}
@@ -53,7 +55,15 @@ jobs:
                   SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:${{ matrix.test-type.port }}/${{ matrix.test-type.db }}
                   SPRING_DATASOURCE_USERNAME: ${{ matrix.test-type.user }}
                   SPRING_DATASOURCE_PASSWORD: password
-
+                  STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+                  STRIPE_PUBLISHABLE_KEY: ${{ secrets.STRIPE_PUBLISHABLE_KEY }}
+            -   name: Upload build directory
+                if: ${{ matrix.test-type.build && github.ref == 'refs/heads/main' }}
+                uses: actions/upload-artifact@v4
+                with:
+                    name: build-directory
+                    path: build/
+                    retention-days: 1
     security:
         name: "🔒 Security"
         runs-on: ubuntu-latest
@@ -124,22 +134,28 @@ jobs:
         permissions:
             contents: read
         steps:
-            -   uses: actions/checkout@v4
+            - uses: actions/checkout@v4
 
-            -   name: Setup Java and Gradle
-                uses: ./.github/actions/set-up-java-gradle
+            - name: Setup Java and Gradle
+              uses: ./.github/actions/set-up-java-gradle
 
-            -   name: Build Application
-                run: ./gradlew build -x test -x flywayTestDbClean -x flywayTestDbMigrate
+            - name: Download build directory from testing
+              uses: actions/download-artifact@v4
+              with:
+                name: build-directory
+                path: build/
 
-            -   name: Upload Build Artifacts
-                uses: actions/upload-artifact@v4
-                with:
-                    name: build-artifacts
-                    path: |
-                        build/libs/*.jar
-                        build/distributions/*
-                    retention-days: 1
+            - name: Build Application
+              run: ./gradlew build -x test -x flywayTestDbClean -x flywayTestDbMigrate
+
+            - name: Upload Build Artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                name: build-artifacts
+                path: |
+                  build/libs/*.jar
+                  build/distributions/*
+                retention-days: 1
 
     deploy-staging:
         name: "🚀 Deploy to Staging"

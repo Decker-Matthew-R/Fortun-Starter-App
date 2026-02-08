@@ -3,6 +3,8 @@ package com.fortuna.exception;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.fortuna.exception.model.ErrorResponse;
+import com.fortuna.metrics.exception.MetricSerializationException;
+import com.fortuna.payment.exception.PaymentException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -13,6 +15,24 @@ import org.springframework.web.context.request.ServletWebRequest;
 class GlobalExceptionHandlerTest {
 
     private final GlobalExceptionHandler handler = new GlobalExceptionHandler();
+
+    @Test
+    @DisplayName("should handle PaymentException with 400 status")
+    void shouldHandlePaymentException() {
+        PaymentException exception = new PaymentException("Card declined");
+        ServletWebRequest request = new ServletWebRequest(new MockHttpServletRequest());
+
+        ResponseEntity<ErrorResponse> response = handler.handlePaymentException(exception, request);
+
+        assertNotNull(response);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("Card declined", response.getBody().getMessage());
+        assertEquals(400, response.getBody().getStatus());
+        assertNotNull(response.getBody().getErrorId());
+        assertFalse(response.getBody().getErrorId().isEmpty());
+        assertTrue(response.getBody().getTimestamp() > 0);
+    }
 
     @Test
     @DisplayName("should handle MetricSerializationException with 500 status")
