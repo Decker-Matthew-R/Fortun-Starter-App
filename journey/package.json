@@ -15,7 +15,8 @@
     "resolutions": {
         "**/cross-spawn": "^7.0.5",
         "lodash": "^4.17.23",
-        "@babel/runtime": "^7.26.0"
+        "@babel/runtime": "^7.26.0",
+        "qs": "^6.14.2"
     }
 }
 
