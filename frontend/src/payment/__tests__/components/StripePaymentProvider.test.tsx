@@ -22,7 +22,7 @@ describe('StripePaymentProvider', () => {
 
     it('should show loading state initially', () => {
         vi.mocked(StripeConfig.getStripePublishableKey).mockImplementation(
-            () => new Promise(() => {}) // Never resolves
+            () => new Promise(() => {})
         );
 
         render(
@@ -89,14 +89,12 @@ describe('StripePaymentProvider', () => {
             expect(screen.getByText('Child Content')).toBeInTheDocument();
         });
 
-        // Rerender with different children
         rerender(
             <StripePaymentProvider>
                 <div>Updated Content</div>
             </StripePaymentProvider>
         );
 
-        // Should still only be called once
         expect(StripeConfig.getStripePublishableKey).toHaveBeenCalledTimes(1);
         expect(StripeJs.loadStripe).toHaveBeenCalledTimes(1);
     });
