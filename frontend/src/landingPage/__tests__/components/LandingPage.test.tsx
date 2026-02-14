@@ -1,11 +1,11 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { vi } from 'vitest';
-import App from '../App.tsx';
-import * as MetricsClient from '../metrics/client/MetricsClient';
-import * as PaymentClient from '../payment/client/PaymentClient';
+import LandingPage from '../../components/LandingPage.tsx';
+import * as MetricsClient from '../../../metrics/client/MetricsClient';
+import * as PaymentClient from '../../../payment/client/PaymentClient';
 
-vi.mock('../payment/config/StripeConfig', () => ({
+vi.mock('../../../payment/config/StripeConfig', () => ({
     getStripePublishableKey: vi.fn().mockResolvedValue('pk_test_mock_key'),
 }));
 
@@ -21,7 +21,7 @@ vi.mock('@stripe/stripe-js', () => ({
     }),
 }));
 
-describe('render app', () => {
+describe('render landing page', () => {
     const mockProcessPayment = vi.fn();
     const mockSaveMetricEvent = vi.fn();
 
@@ -35,7 +35,7 @@ describe('render app', () => {
         });
 
         const user = userEvent.setup();
-        render(<App />);
+        render(<LandingPage />);
 
         const countButton = screen.getByRole('button', { name: 'count is 0' });
         expect(countButton).toBeVisible();
@@ -57,7 +57,7 @@ describe('render app', () => {
             error: null,
         });
 
-        render(<App />);
+        render(<LandingPage />);
 
         await waitFor(() => {
             expect(screen.getByRole('button', { name: 'Pay $10.00' })).toBeVisible();
@@ -81,7 +81,7 @@ describe('render app', () => {
         });
 
         const user = userEvent.setup();
-        render(<App />);
+        render(<LandingPage />);
 
         await waitFor(() => {
             expect(screen.getByRole('button', { name: 'Pay $10.00' })).toBeVisible();
@@ -114,7 +114,7 @@ describe('render app', () => {
         });
 
         const user = userEvent.setup();
-        render(<App />);
+        render(<LandingPage />);
 
         await waitFor(() => {
             expect(screen.getByRole('button', { name: 'Pay $10.00' })).toBeVisible();

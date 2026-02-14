@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from './assets/vite.svg';
-import './App.css';
+import reactLogo from '../../assets/react.svg';
+import viteLogo from '../../assets/vite.svg';
 import { Button, Typography } from '@mui/material';
-import { useMetrics } from './metrics/client/MetricsClient.ts';
-import { METRIC_EVENT_TYPE } from './metrics/model/METRIC_EVENT_TYPE.ts';
-import { StripePaymentProvider } from './payment/components/StripePaymentProvider.tsx';
-import { PaymentButton } from './payment/components/PaymentButton.tsx';
+import { useMetrics } from '../../metrics/client/MetricsClient.ts';
+import { METRIC_EVENT_TYPE } from '../../metrics/model/METRIC_EVENT_TYPE.ts';
+import { StripePaymentProvider } from '../../payment/components/StripePaymentProvider.tsx';
+import { PaymentButton } from '../../payment/components/PaymentButton.tsx';
 
 function App() {
     const [count, setCount] = useState(0);

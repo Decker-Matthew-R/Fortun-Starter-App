@@ -86,14 +86,12 @@ public class MetricsIntegrationTest {
 
         assertThat(savedMetrics).hasSize(2);
 
-        // First metric
         assertThat(savedMetrics.get(0).getEvent())
                 .isEqualTo(MetricEventType.BUTTON_CLICK.toString());
         assertThat(savedMetrics.get(0).getMetadata()).contains("buttonId", "submit", "login");
         assertThat(savedMetrics.get(0).getEventTime().toInstant())
                 .isCloseTo(Instant.now(), within(3, ChronoUnit.SECONDS));
 
-        // Second metric
         assertThat(savedMetrics.get(1).getEvent())
                 .isEqualTo(MetricEventType.PAYMENT_SUBMITTED.toString());
         assertThat(savedMetrics.get(1).getMetadata()).contains("paymentType", "Card", "checkout");

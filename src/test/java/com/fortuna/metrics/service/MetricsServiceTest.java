@@ -98,9 +98,9 @@ class MetricsServiceTest {
         MetricEventDTO metricEventDTO =
                 new MetricEventDTO(MetricEventType.BUTTON_CLICK, Map.of("screen", "home"), null);
 
-        Timestamp before = new Timestamp(System.currentTimeMillis() - 1000); // 1 second before
+        Timestamp before = new Timestamp(System.currentTimeMillis() - 1000);
         metricsService.saveMetricEvent(metricEventDTO);
-        Timestamp after = new Timestamp(System.currentTimeMillis() + 1000); // 1 second after
+        Timestamp after = new Timestamp(System.currentTimeMillis() + 1000);
 
         ArgumentCaptor<MetricEventEntity> captor = ArgumentCaptor.forClass(MetricEventEntity.class);
         verify(mockMetricsRepository).save(captor.capture());

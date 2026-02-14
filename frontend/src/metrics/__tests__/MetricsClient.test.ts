@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react';
 import { http, HttpResponse } from 'msw';
 import { describe, expect, vi, beforeEach } from 'vitest';
 
-import { API_ENDPOINTS } from '../../ApiEndpoints/API_ENDPOINTS.ts';
+import { API_ENDPOINTS } from '../../apiEndpoints/API_ENDPOINTS.ts';
 import { useMetrics } from '../client/MetricsClient.ts';
 import { MetadataType } from '../model/MetadataType.ts';
 import { METRIC_EVENT_TYPE } from '../model/METRIC_EVENT_TYPE.ts';
