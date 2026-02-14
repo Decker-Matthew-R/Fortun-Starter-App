@@ -94,7 +94,7 @@ class PaymentControllerTest {
                         post("/api/payments/create-payment-intent")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
-                .andExpect(status().isInternalServerError()); // 500, not 400
+                .andExpect(status().isInternalServerError());
 
         verify(mockPaymentService, times(1))
                 .createPaymentIntent(any(PaymentIntentRequestDTO.class));
@@ -115,7 +115,7 @@ class PaymentControllerTest {
                         post("/api/payments/create-payment-intent")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(requestJson))
-                .andExpect(status().isBadRequest()); // 400 for PaymentException
+                .andExpect(status().isBadRequest());
 
         verify(mockPaymentService, times(1))
                 .createPaymentIntent(any(PaymentIntentRequestDTO.class));

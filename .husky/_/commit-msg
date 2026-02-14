@@ -3,7 +3,6 @@
 COMMIT_MSG_FILE=$1
 COMMIT_MSG=$(cat "$COMMIT_MSG_FILE")
 
-# Regex pattern: [#0000] Type: Message (at least 5 chars)
 PATTERN='^\[#[0-9]{4}\] (Chore|CVE|Feature|Bug): .{5,}'
 
 if ! echo "$COMMIT_MSG" | grep -qE "$PATTERN"; then

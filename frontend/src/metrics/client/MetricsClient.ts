@@ -1,5 +1,5 @@
-import { API_ENDPOINTS } from '../../ApiEndpoints/API_ENDPOINTS.ts';
-import axiosInstance from '../../AxiosInstance/AxiosInstance.ts';
+import { API_ENDPOINTS } from '../../apiEndpoints/API_ENDPOINTS.ts';
+import axiosInstance from '../../axiosInstance/AxiosInstance.ts';
 import { MetadataType } from '../model/MetadataType.ts';
 import { METRIC_EVENT_TYPE } from '../model/METRIC_EVENT_TYPE.ts';
 import { MetricEventType } from '../model/MetricEventType.ts';

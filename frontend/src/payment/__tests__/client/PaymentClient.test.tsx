@@ -334,7 +334,7 @@ describe('PaymentClient', () => {
     it('should handle payment intent creation failure without error message', async () => {
         mockFetch.mockResolvedValueOnce({
             ok: false,
-            json: async () => ({}), // No message in error response
+            json: async () => ({}),
         });
 
         const { result } = renderHook(() => usePayment());
@@ -362,7 +362,6 @@ describe('PaymentClient', () => {
         mockStripe.confirmCardPayment.mockResolvedValueOnce({
             error: {
                 type: 'card_error',
-                // No message field
             },
         });
 
